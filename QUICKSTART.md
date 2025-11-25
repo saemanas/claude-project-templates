@@ -32,13 +32,24 @@ Edit `~/.claude/settings.json`:
 
 Create `.claude/settings.local.json` in your project root with the same content.
 
-### GitHub Repo Delete Permission (Optional)
+### GitHub CLI Permissions (Recommended)
 
-If you want AI to delete test repositories:
+Grant full permissions for seamless AI-driven development:
 
 ```bash
-gh auth refresh -h github.com -s delete_repo
+# All permissions at once (recommended)
+gh auth refresh -h github.com -s repo,delete_repo,admin:public_key,write:org,read:org,gist,workflow,admin:org_hook
 ```
+
+Or add individually as needed:
+
+| Permission | Command | Use Case |
+|------------|---------|----------|
+| `delete_repo` | `gh auth refresh -s delete_repo` | Delete test repositories |
+| `workflow` | `gh auth refresh -s workflow` | Manage GitHub Actions |
+| `admin:public_key` | `gh auth refresh -s admin:public_key` | Manage SSH keys |
+| `write:org` | `gh auth refresh -s write:org` | Manage organization settings |
+| `admin:org_hook` | `gh auth refresh -s admin:org_hook` | Manage organization webhooks |
 
 > **Note**: Auto-approve settings are per-user. They cannot be distributed via templates for security reasons.
 
