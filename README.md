@@ -1,8 +1,10 @@
 # Project Memory System - Templates
 
-**Version**: 2.0.0
-**Last Updated**: 2025-11-26
-**Purpose**: Token-efficient project memory system with **GitHub integration**, **Gitflow enforcement**, and **full automation**
+> Token-efficient project memory system with GitHub integration, Gitflow enforcement, and full automation
+
+| Version | Last Updated | Status |
+|---------|--------------|--------|
+| 2.0.0 | 2025-11-26 | Stable |
 
 ---
 
@@ -339,7 +341,3 @@ chmod +x scripts/*.sh scripts/*.py .githooks/*
 ## License
 
 Free for any purpose. Attribution optional but appreciated.
-
----
-
-**Version**: 2.0.0 | **Enforcement**: Git hooks + GitHub Actions + Gitflow
