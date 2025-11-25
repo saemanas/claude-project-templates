@@ -12,6 +12,10 @@ refs/
 ├── README.md              ← This file (guide)
 ├── PROJECT-CONTEXT.md     ← Project context (AI must read)
 │
+├── base/                  ← EXISTING PROJECT MATERIALS (READ-ONLY)
+│   ├── README.md          ← Rules for base/ usage
+│   └── {original-dirs}/   ← Preserved original content (DO NOT MODIFY)
+│
 ├── prd/                   ← Product Requirements Documents
 │   ├── PRD-001-overview.md
 │   ├── PRD-002-features.md
@@ -30,6 +34,53 @@ refs/
     ├── {topic}-research.md
     └── ...
 ```
+
+---
+
+## refs/base/ - Existing Project Materials (CRITICAL)
+
+### Purpose
+
+When applying this template to an **existing project**, all original materials are moved to `refs/base/`:
+
+```
+refs/base/
+├── client/          ← Client-provided documents
+├── user/            ← Previous analysis results
+└── {any-original}/  ← Any pre-existing content
+```
+
+### Rules (STRICTLY ENFORCED)
+
+| Rule | Description |
+|------|-------------|
+| **NO MODIFY** | Never edit files in refs/base/ |
+| **NO DELETE** | Never delete files in refs/base/ |
+| **NO RENAME** | Never rename files in refs/base/ |
+| **READ-ONLY** | Only read and reference |
+
+### AI Behavior
+
+```
+ALLOWED:
+✓ Read files for context
+✓ Reference in PRD/decisions
+✓ Quote content in new documents
+✓ Use as basis for analysis
+
+FORBIDDEN:
+✗ Edit any file
+✗ Delete any file
+✗ Move files out
+✗ Rename anything
+```
+
+### Violation Response
+
+If modification is attempted:
+1. STOP immediately
+2. Report to user
+3. Suggest alternative approach
 
 ---
 
@@ -216,6 +267,7 @@ Exact versions for all dependencies:
 
 | File | Permission |
 |------|------------|
+| `base/**/*` | **READ-ONLY** - NEVER modify or delete |
 | `PROJECT-CONTEXT.md` | Updatable on user request |
 | `prd/*.md` | Updatable on user request |
 | `stack/STACK-DECISION.md` | **LOCKED** - Only after change discussion |

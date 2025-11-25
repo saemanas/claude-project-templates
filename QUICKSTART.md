@@ -5,6 +5,15 @@
 
 ---
 
+## Choose Your Setup Path
+
+| Scenario | Script | Description |
+|----------|--------|-------------|
+| **New Project** | `./scripts/init-project.sh` | Create new project with GitHub repo |
+| **Existing Project** | `./scripts/apply-to-existing.sh /path` | Apply to existing project |
+
+---
+
 ## Step 0: Claude Code Auto-Approve Setup (Optional but Recommended)
 
 Claude Code asks for permission on every shell command by default. For smooth AI-driven development, configure auto-approve:
@@ -384,8 +393,38 @@ docker compose down
 
 | File | Purpose | Change Process |
 |------|---------|----------------|
+| `refs/base/**/*` | Original Materials | **READ-ONLY - NEVER modify or delete** |
 | `refs/stack/STACK-DECISION.md` | Tech Stack | User request → AI analysis → Approval → Change |
 | `refs/dependencies/VERSIONS.lock.md` | Dependency Versions | User request → AI analysis → Approval → Change |
+
+---
+
+## Applying to Existing Project
+
+For projects with existing files (e.g., `refs/` already exists):
+
+```bash
+# From template directory
+./scripts/apply-to-existing.sh /path/to/existing/project
+```
+
+**What happens**:
+1. Existing `refs/` content moves to `refs/base/` (READ-ONLY)
+2. Template structure is applied
+3. Original files are **preserved, never deleted**
+
+### refs/base/ Rules (STRICTLY ENFORCED)
+
+| Action | Allowed |
+|--------|---------|
+| Read files for context | ✓ YES |
+| Reference in PRD/decisions | ✓ YES |
+| Quote content in new documents | ✓ YES |
+| **Edit any file** | ✗ **NEVER** |
+| **Delete any file** | ✗ **NEVER** |
+| **Rename or move files** | ✗ **NEVER** |
+
+> **AI Violation Response**: If modification is attempted, STOP immediately and report to user.
 
 ---
 

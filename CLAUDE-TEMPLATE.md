@@ -46,6 +46,8 @@
 │
 └── refs/ (Project References - Project context, PRD, Tech stack)
     ├── PROJECT-CONTEXT.md - Project context (read every session)
+    ├── base/              READ-ONLY - Original project materials
+    │   └── {preserved}/   (NEVER modify or delete!)
     ├── prd/               (Product Requirements Documents)
     ├── stack/             LOCKED - Tech stack decisions
     │   ├── STACK-DECISION.md   (Final decision - no changes)
@@ -171,12 +173,30 @@ Every PR must include:
 
 ## Project References (refs/) - Tech Stack Management
 
+### refs/base/ - Original Project Materials (CRITICAL)
+
+> **refs/base/ is READ-ONLY. NEVER modify or delete any file in refs/base/**
+
+When template is applied to an existing project, original materials are preserved in `refs/base/`:
+
+| Action | Allowed |
+|--------|---------|
+| Read files for context | ✓ YES |
+| Reference in PRD/decisions | ✓ YES |
+| Quote content in new documents | ✓ YES |
+| Edit any file | ✗ NEVER |
+| Delete any file | ✗ NEVER |
+| Rename or move files | ✗ NEVER |
+
+**Violation Response**: If modification is attempted, STOP immediately and report to user.
+
 ### LOCKED Files (No Changes Allowed)
 
 The following files are **LOCKED**. Never modify without explicit user request:
 
 ```
-refs/stack/STACK-DECISION.md    <- Tech stack decision (LOCKED)
+refs/base/**/*                     <- Original materials (READ-ONLY - NEVER modify)
+refs/stack/STACK-DECISION.md       <- Tech stack decision (LOCKED)
 refs/dependencies/VERSIONS.lock.md <- Dependency versions (LOCKED)
 ```
 
@@ -431,6 +451,7 @@ LOCKED (Never modify without explicit user request + acknowledgment):
 ├── scripts/*                         # Automation scripts
 ├── RULES.md                          # Zero tolerance rules
 ├── GITFLOW.md                        # Gitflow documentation
+├── refs/base/**/*                    # Original materials (READ-ONLY - NEVER modify)
 ├── refs/stack/STACK-DECISION.md      # Tech stack decision (change discussion needed)
 └── refs/dependencies/VERSIONS.lock.md # Dependency versions (change discussion needed)
 ```
@@ -480,6 +501,7 @@ See [RULES.md](./RULES.md) for:
 - **Modify protected files** (.protected/, .githooks/, scripts/, RULES.md)
 - **Bypass pre-commit hooks** (git commit --no-verify)
 - **Push directly to main/develop** (use feature/* branches)
+- **Modify or delete refs/base/** (READ-ONLY - original project materials)
 - **Change STACK-DECISION.md/VERSIONS.lock.md** without user explicit request
 - {PROJECT_SPECIFIC_DON'T_1}
 - {PROJECT_SPECIFIC_DON'T_2}
