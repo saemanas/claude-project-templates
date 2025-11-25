@@ -27,6 +27,19 @@ jobs:
           BRANCH="${GITHUB_REF#refs/heads/}"
           echo "Push to branch: $BRANCH"
 
+          # Allow initial commit (first push to repository)
+          if [[ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]]; then
+            echo "OK: Initial commit is allowed"
+            exit 0
+          fi
+
+          # Allow commits with "Initial commit" message
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          if [[ "$COMMIT_MSG" == *"Initial commit"* ]] || [[ "$COMMIT_MSG" == *"initial commit"* ]]; then
+            echo "OK: Initial commit message detected"
+            exit 0
+          fi
+
           if [[ "$BRANCH" == "main" || "$BRANCH" == "develop" ]]; then
             # Check if this is a merge commit (allowed) or direct push (blocked)
             PARENT_COUNT=$(git rev-list --count HEAD^@ 2>/dev/null || echo "1")
