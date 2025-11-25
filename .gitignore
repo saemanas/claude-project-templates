@@ -1,0 +1,99 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# IDE - VS Code
+.vscode/
+*.code-workspace
+
+# IDE - JetBrains (IntelliJ, PyCharm, WebStorm, etc.)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# IDE - Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# IDE - Vim
+*.swp
+*.swo
+*~
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+.env
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Coverage and testing
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
+# Build outputs
+dist/
+build/
+out/
+*.build/
+
+# Docker
+.docker/
+
+# Thumbnails
+Thumbs.db
+ehthumbs.db
+
+# Archive files (keep in archive/ directory only)
+*.tar.gz
+*.zip
+*.rar
+
+# Secrets (should never be committed)
+*.pem
+*.key
+*.crt
+credentials.json
+secrets.json

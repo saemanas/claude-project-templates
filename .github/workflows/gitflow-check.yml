@@ -1,0 +1,236 @@
+name: Gitflow Enforcement
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  check-branch-rules:
+    name: Check Branch Rules
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check direct push to protected branch
+        if: github.event_name == 'push'
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          echo "Push to branch: $BRANCH"
+
+          if [[ "$BRANCH" == "main" || "$BRANCH" == "develop" ]]; then
+            # Check if this is a merge commit (allowed) or direct push (blocked)
+            PARENT_COUNT=$(git rev-list --count HEAD^@ 2>/dev/null || echo "1")
+
+            if [[ "$PARENT_COUNT" -lt 2 ]]; then
+              # Not a merge commit - check if from allowed source
+              echo "::error::Direct push to $BRANCH is not allowed. Use Pull Request instead."
+              echo ""
+              echo "Allowed workflow:"
+              echo "  1. Create feature/bugfix/hotfix branch"
+              echo "  2. Push to that branch"
+              echo "  3. Create Pull Request"
+              echo "  4. Merge after approval"
+              exit 1
+            fi
+          fi
+
+          echo "OK: Push to $BRANCH is allowed"
+
+      - name: Check PR source branch
+        if: github.event_name == 'pull_request'
+        run: |
+          TARGET="${{ github.base_ref }}"
+          SOURCE="${{ github.head_ref }}"
+
+          echo "PR: $SOURCE → $TARGET"
+
+          # Define allowed merges
+          ALLOWED=false
+          ERROR_MSG=""
+
+          case "$TARGET" in
+            main)
+              # Only release/* and hotfix/* can merge to main
+              if [[ "$SOURCE" == release/* ]] || [[ "$SOURCE" == hotfix/* ]]; then
+                ALLOWED=true
+              else
+                ERROR_MSG="Only release/* and hotfix/* branches can merge to main"
+              fi
+              ;;
+            develop)
+              # feature/*, bugfix/*, release/*, hotfix/* can merge to develop
+              if [[ "$SOURCE" == feature/* ]] || \
+                 [[ "$SOURCE" == bugfix/* ]] || \
+                 [[ "$SOURCE" == release/* ]] || \
+                 [[ "$SOURCE" == hotfix/* ]] || \
+                 [[ "$SOURCE" == main ]]; then
+                ALLOWED=true
+              else
+                ERROR_MSG="Only feature/*, bugfix/*, release/*, hotfix/* branches can merge to develop"
+              fi
+              ;;
+            *)
+              ALLOWED=true
+              ;;
+          esac
+
+          if [[ "$ALLOWED" == "false" ]]; then
+            echo "::error::$ERROR_MSG"
+            echo ""
+            echo "Branch naming convention:"
+            echo "  feature/*  - New features (merge to develop)"
+            echo "  bugfix/*   - Bug fixes (merge to develop)"
+            echo "  hotfix/*   - Urgent fixes (merge to main, then develop)"
+            echo "  release/*  - Release prep (merge to main, then develop)"
+            exit 1
+          fi
+
+          echo "OK: $SOURCE → $TARGET is allowed"
+
+      - name: Check branch naming convention
+        if: github.event_name == 'pull_request'
+        run: |
+          SOURCE="${{ github.head_ref }}"
+
+          # Check if branch follows naming convention
+          if [[ "$SOURCE" == feature/* ]] || \
+             [[ "$SOURCE" == bugfix/* ]] || \
+             [[ "$SOURCE" == hotfix/* ]] || \
+             [[ "$SOURCE" == release/* ]] || \
+             [[ "$SOURCE" == main ]] || \
+             [[ "$SOURCE" == develop ]]; then
+            echo "OK: Branch name '$SOURCE' follows convention"
+          else
+            echo "::warning::Branch name '$SOURCE' does not follow convention"
+            echo ""
+            echo "Recommended naming:"
+            echo "  feature/short-description"
+            echo "  bugfix/issue-number-description"
+            echo "  hotfix/critical-fix"
+            echo "  release/x.x.x"
+          fi
+
+  check-commit-messages:
+    name: Check Commit Messages
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit message format
+        run: |
+          # Get commits in PR
+          COMMITS=$(git log --format="%s" origin/${{ github.base_ref }}..HEAD)
+
+          echo "Checking commit messages..."
+          echo ""
+
+          WARNINGS=0
+
+          while IFS= read -r msg; do
+            [[ -z "$msg" ]] && continue
+
+            # Check conventional commit format
+            if [[ "$msg" =~ ^(feat|fix|hotfix|docs|refactor|test|chore|style|perf|ci|build|revert)(\(.+\))?:\ .+ ]]; then
+              echo "OK: $msg"
+            else
+              echo "::warning::Non-conventional commit: $msg"
+              ((WARNINGS++))
+            fi
+          done <<< "$COMMITS"
+
+          echo ""
+          if [[ $WARNINGS -gt 0 ]]; then
+            echo "Found $WARNINGS non-conventional commit(s)"
+            echo ""
+            echo "Recommended format:"
+            echo "  <type>: <description>"
+            echo ""
+            echo "Types: feat, fix, hotfix, docs, refactor, test, chore, style, perf, ci, build, revert"
+          fi
+
+  check-memory-update:
+    name: Check Memory Update
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if code changes have memory update
+        run: |
+          # Get changed files
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          # Check for code changes
+          CODE_CHANGED=$(echo "$CHANGED_FILES" | grep -E '\.(py|js|ts|jsx|tsx|go|rs|java|c|cpp|h|hpp|rb|php|swift|kt|scala|cs)$' | wc -l)
+
+          # Check for memory changes
+          MEMORY_CHANGED=$(echo "$CHANGED_FILES" | grep -E '^memory/' | wc -l)
+
+          echo "Code files changed: $CODE_CHANGED"
+          echo "Memory files changed: $MEMORY_CHANGED"
+
+          if [[ $CODE_CHANGED -gt 0 ]] && [[ $MEMORY_CHANGED -eq 0 ]]; then
+            echo "::warning::Code changed without memory update"
+            echo ""
+            echo "Consider updating:"
+            echo "  - memory/timeline/YYYY-Wnn.md (log changes)"
+            echo "  - memory/NOW.md (if status changed)"
+          else
+            echo "OK: Memory update check passed"
+          fi
+
+  summary:
+    name: Gitflow Summary
+    runs-on: ubuntu-latest
+    needs: [check-branch-rules, check-commit-messages, check-memory-update]
+    if: always()
+
+    steps:
+      - name: Generate Summary
+        run: |
+          echo "## Gitflow Check Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "| Check | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          if [[ "${{ needs.check-branch-rules.result }}" == "success" ]]; then
+            echo "| Branch Rules | Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Branch Rules | Failed |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ needs.check-commit-messages.result }}" == "success" ]]; then
+            echo "| Commit Messages | Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Commit Messages | Warning |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [[ "${{ needs.check-memory-update.result }}" == "success" ]]; then
+            echo "| Memory Update | Passed |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "| Memory Update | Warning |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*Gitflow Enforcement Workflow*" >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,126 @@
+name: Protected Files Check
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - '.protected/**'
+      - '.githooks/**'
+      - '.github/workflows/**'
+      - 'scripts/**'
+      - 'RULES.md'
+      - 'GITFLOW.md'
+
+jobs:
+  check-protected-files:
+    name: Verify Protected Files Modification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if system branch
+        id: check-branch
+        run: |
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          echo "Source branch: $SOURCE_BRANCH"
+
+          if [[ "$SOURCE_BRANCH" == system/* ]]; then
+            echo "is_system_branch=true" >> $GITHUB_OUTPUT
+            echo "::notice::System branch detected - protected file modification allowed with review"
+          else
+            echo "is_system_branch=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: List modified protected files
+        id: list-files
+        run: |
+          echo "## Modified Protected Files" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Get changed files
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
+
+          # Define protected patterns
+          PROTECTED_FOUND=false
+
+          echo "| File | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+
+          while IFS= read -r file; do
+            case "$file" in
+              .protected/*|.githooks/*|.github/workflows/*|scripts/*|RULES.md|GITFLOW.md)
+                echo "| \`$file\` | PROTECTED |" >> $GITHUB_STEP_SUMMARY
+                PROTECTED_FOUND=true
+                ;;
+            esac
+          done <<< "$CHANGED"
+
+          if [ "$PROTECTED_FOUND" = false ]; then
+            echo "| (none) | - |" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "protected_found=$PROTECTED_FOUND" >> $GITHUB_OUTPUT
+
+      - name: Block if not system branch
+        if: steps.check-branch.outputs.is_system_branch == 'false' && steps.list-files.outputs.protected_found == 'true'
+        run: |
+          echo "::error::Protected files cannot be modified from non-system branches"
+          echo ""
+          echo "These files define core system rules:"
+          echo "  - Token optimization (81% reduction)"
+          echo "  - Long-term memory management"
+          echo "  - Automated enforcement"
+          echo ""
+          echo "To modify protected files:"
+          echo "  1. User must explicitly request the change"
+          echo "  2. Create a system/* branch (e.g., system/update-rules-v1.1)"
+          echo "  3. Make changes and create PR"
+          echo "  4. Requires additional review and approval"
+          echo ""
+          exit 1
+
+      - name: Require additional review
+        if: steps.check-branch.outputs.is_system_branch == 'true'
+        run: |
+          echo "::warning::This PR modifies protected files and requires additional review"
+          echo ""
+          echo "## Review Checklist" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] User explicitly requested this change" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Changes do not break token optimization" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Changes do not break memory management" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Changes do not break automated enforcement" >> $GITHUB_STEP_SUMMARY
+          echo "- [ ] Version number updated if applicable" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+          echo "*This PR modifies protected system files*" >> $GITHUB_STEP_SUMMARY
+
+      - name: Add PR label
+        if: steps.check-branch.outputs.is_system_branch == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['protected-files', 'requires-review']
+            })
+
+      - name: Summary
+        run: |
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "---" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ steps.check-branch.outputs.is_system_branch }}" == "true" ]; then
+            echo "**Status**: Allowed (system branch) - Requires additional review" >> $GITHUB_STEP_SUMMARY
+          elif [ "${{ steps.list-files.outputs.protected_found }}" == "true" ]; then
+            echo "**Status**: BLOCKED - Use system/* branch for protected files" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Status**: OK - No protected files modified" >> $GITHUB_STEP_SUMMARY
+          fi

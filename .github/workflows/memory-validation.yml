@@ -1,0 +1,179 @@
+name: Memory System Validation
+
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - 'memory/**'
+      - 'docs/**'
+      - 'CLAUDE.md'
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - 'memory/**'
+      - 'docs/**'
+      - 'CLAUDE.md'
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  validate-memory:
+    name: Validate Memory System
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Need previous commit for diff
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install tiktoken
+
+      - name: Check line limits (Zero Tolerance)
+        id: line-check
+        run: |
+          echo "Checking line limits..."
+          ERRORS=0
+
+          check_lines() {
+            local file=$1
+            local max=$2
+            if [ -f "$file" ]; then
+              lines=$(wc -l < "$file")
+              if [ $lines -gt $max ]; then
+                echo "::error file=$file::Line limit exceeded: $lines/$max lines"
+                return 1
+              else
+                echo "OK: $file - $lines/$max lines"
+              fi
+            fi
+            return 0
+          }
+
+          # Core files
+          check_lines "memory/NOW.md" 300 || ERRORS=$((ERRORS+1))
+          check_lines "memory/FIND.md" 200 || ERRORS=$((ERRORS+1))
+          check_lines "memory/decisions/INDEX.md" 300 || ERRORS=$((ERRORS+1))
+
+          # Timeline files
+          for f in memory/timeline/????-W??.md; do
+            [ -f "$f" ] && { check_lines "$f" 500 || ERRORS=$((ERRORS+1)); }
+          done
+
+          for f in memory/timeline/*-SUMMARY.md; do
+            [ -f "$f" ] && { check_lines "$f" 500 || ERRORS=$((ERRORS+1)); }
+          done
+
+          # Decision records
+          for f in memory/decisions/DEC-*.md; do
+            [ -f "$f" ] && { check_lines "$f" 500 || ERRORS=$((ERRORS+1)); }
+          done
+
+          # Topic READMEs
+          for f in docs/*/README.md; do
+            [ -f "$f" ] && { check_lines "$f" 100 || ERRORS=$((ERRORS+1)); }
+          done
+
+          # Topic content
+          for f in docs/*/*.md; do
+            [ -f "$f" ] || continue
+            [[ "$(basename "$f")" == "README.md" ]] && continue
+            check_lines "$f" 500 || ERRORS=$((ERRORS+1))
+          done
+
+          if [ $ERRORS -gt 0 ]; then
+            echo "::error::$ERRORS line limit violation(s) found"
+            exit 1
+          fi
+
+          echo "All line limits OK"
+
+      - name: Check token budgets
+        id: token-check
+        run: |
+          python3 scripts/count-tokens.py --budget
+
+      - name: Check decision ID uniqueness
+        id: decision-check
+        run: |
+          echo "Checking decision ID uniqueness..."
+
+          if [ -d "memory/decisions" ]; then
+            # Extract IDs from filenames
+            ids=$(ls memory/decisions/DEC-*.md 2>/dev/null | xargs -I {} basename {} .md | cut -d'-' -f1-2 | sort)
+            duplicates=$(echo "$ids" | uniq -d)
+
+            if [ -n "$duplicates" ]; then
+              echo "::error::Duplicate decision IDs found: $duplicates"
+              exit 1
+            fi
+
+            count=$(echo "$ids" | grep -c . || echo 0)
+            echo "OK: $count unique decision IDs"
+          else
+            echo "No decisions directory found"
+          fi
+
+      - name: Check required structure
+        id: structure-check
+        run: |
+          echo "Checking required file structure..."
+          WARNINGS=0
+
+          # Required files
+          if [ ! -f "memory/NOW.md" ]; then
+            echo "::error::Required file missing: memory/NOW.md"
+            exit 1
+          fi
+
+          # Recommended files (warnings only)
+          [ ! -f "memory/FIND.md" ] && echo "::warning::Recommended file missing: memory/FIND.md" && WARNINGS=$((WARNINGS+1))
+          [ ! -f "CLAUDE.md" ] && echo "::warning::Recommended file missing: CLAUDE.md" && WARNINGS=$((WARNINGS+1))
+
+          # Check NOW.md structure
+          if [ -f "memory/NOW.md" ]; then
+            for section in "Status Dashboard" "Active This Week" "Quick Navigation"; do
+              if ! grep -q "$section" memory/NOW.md; then
+                echo "::warning file=memory/NOW.md::Missing recommended section: $section"
+                WARNINGS=$((WARNINGS+1))
+              fi
+            done
+          fi
+
+          echo "Structure check complete with $WARNINGS warning(s)"
+
+      - name: Check for memory update with code changes
+        id: update-check
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Checking if memory was updated with code changes..."
+
+          # Get changed files in PR
+          CODE_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(py|js|ts|go|rs|java|c|cpp|rb|php|swift|kt)$' | wc -l)
+          MEMORY_CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '^memory/' | wc -l)
+
+          if [ $CODE_CHANGED -gt 0 ] && [ $MEMORY_CHANGED -eq 0 ]; then
+            echo "::warning::Code changed without memory update. Consider updating memory/timeline/"
+          fi
+
+      - name: Generate token report
+        id: report
+        if: always()
+        run: |
+          echo "## Token Usage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          python3 scripts/count-tokens.py --report 2>/dev/null | head -50 >> $GITHUB_STEP_SUMMARY || echo "Report generation failed" >> $GITHUB_STEP_SUMMARY
+
+      - name: Validation Summary
+        if: always()
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "  Memory System Validation Complete"
+          echo "=========================================="

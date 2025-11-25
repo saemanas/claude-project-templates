@@ -1,0 +1,17 @@
+# Mailhog - Development Email Testing
+# Include in main docker-compose.yml
+
+services:
+  mail:
+    image: mailhog/mailhog
+    container_name: ${PROJECT_NAME:-app}_mail
+    restart: unless-stopped
+    ports:
+      - "1025:1025"   # SMTP
+      - "8025:8025"   # Web UI
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
