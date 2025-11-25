@@ -22,6 +22,13 @@
 set -e
 
 # ============================================================================
+# PATH CONFIGURATION (for Homebrew on macOS)
+# ============================================================================
+
+# Add common Homebrew paths
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+# ============================================================================
 # CONFIGURATION
 # ============================================================================
 
@@ -339,12 +346,9 @@ create_github_repo() {
         echo ""
         log_info "Creating GitHub repository..."
 
-        local create_args="--$GITHUB_VISIBILITY"
-        create_args="$create_args --description \"$PROJECT_DESCRIPTION\""
-
         if [[ -n "$GITHUB_ORG" ]]; then
             # Create in organization
-            if gh repo create "$full_repo_name" $create_args --confirm; then
+            if gh repo create "$full_repo_name" --"$GITHUB_VISIBILITY" --description "$PROJECT_DESCRIPTION" -y; then
                 log_success "Created repository: $full_repo_name"
             else
                 log_error "Failed to create repository"
@@ -352,7 +356,7 @@ create_github_repo() {
             fi
         else
             # Create in personal account
-            if gh repo create "$repo_name" $create_args --confirm; then
+            if gh repo create "$repo_name" --"$GITHUB_VISIBILITY" --description "$PROJECT_DESCRIPTION" -y; then
                 log_success "Created repository: $full_repo_name"
             else
                 log_error "Failed to create repository"
@@ -514,17 +518,7 @@ apply_templates() {
 setup_gitflow() {
     log_step 6 "Setting Up Gitflow Branching"
 
-    # Ensure we're on main
-    git checkout -B main 2>/dev/null || git checkout main
-
-    # Create develop branch
-    git checkout -b develop 2>/dev/null || git checkout develop
-    log_success "Created branch: develop"
-
-    # Go back to main
-    git checkout main
-
-    # Create GITFLOW.md documentation
+    # Create GITFLOW.md documentation (before commit)
     cat > GITFLOW.md << 'GITFLOW_EOF'
 # Gitflow Branching Strategy
 
@@ -679,7 +673,7 @@ GITFLOW_EOF
     git config core.hooksPath .githooks
     log_success "Configured git hooks path"
 
-    log_info "Gitflow branches created: main, develop"
+    log_info "Gitflow documentation ready"
 }
 
 # ============================================================================
@@ -902,13 +896,14 @@ setup_github_remote() {
         fi
     fi
 
-    # Create initial commit
-    log_info "Creating initial commit..."
+    # Create initial commit with all files (CLAUDE.md, GITFLOW.md, memory templates)
+    log_info "Creating initial commit with all project files..."
 
     git add .
 
-    # Create initial commit
-    git commit -m "chore: initialize project with memory system
+    # Create the initial commit with all files
+    # Use --no-verify because this is the initial setup (protected files are expected)
+    git commit --no-verify -m "chore: initialize project with memory system
 
 ## What
 - Set up project memory system (v2.0.0)
@@ -936,6 +931,14 @@ Description: ${PROJECT_DESCRIPTION}
 
     log_success "Initial commit created"
 
+    # Create develop branch from main (now that we have a commit)
+    git branch -M main 2>/dev/null || true
+    git checkout -b develop 2>/dev/null || git checkout develop
+    log_success "Created branch: develop"
+
+    # Go back to main for pushing
+    git checkout main
+
     # Push to GitHub
     log_info "Pushing to GitHub..."
 
@@ -944,7 +947,6 @@ Description: ${PROJECT_DESCRIPTION}
     log_success "Pushed branch: main"
 
     # Push develop
-    git checkout develop
     git push -u origin develop --force 2>/dev/null || git push -u origin develop
     log_success "Pushed branch: develop"
 
