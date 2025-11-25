@@ -10,7 +10,7 @@
 ```
 refs/
 ├── README.md              ← This file (guide)
-├── PROJECT-CONTEXT.md     ← Project context (AI must read)
+├── PROJECT-CONTEXT.md     ← Project context (AI(You) must read)
 │
 ├── base/                  ← EXISTING PROJECT MATERIALS (READ-ONLY)
 │   ├── README.md          ← Rules for base/ usage
@@ -23,14 +23,14 @@ refs/
 │
 ├── stack/                 ← Tech stack decisions (LOCKED after decision)
 │   ├── STACK-DECISION.md  ← Final decision (locked until change request)
-│   ├── STACK-RESEARCH.md  ← AI research results
+│   ├── STACK-RESEARCH.md  ← AI(You) research results
 │   └── STACK-ALTERNATIVES.md ← Reviewed alternatives
 │
 ├── dependencies/          ← Dependency version lock
 │   ├── VERSIONS.lock.md   ← Locked versions (no changes)
 │   └── UPGRADE-LOG.md     ← Upgrade history
 │
-└── research/              ← AI research materials
+└── research/              ← AI(You) research materials
     ├── {topic}-research.md
     └── ...
 ```
@@ -59,7 +59,7 @@ refs/base/
 | **NO RENAME** | Never rename files in refs/base/ |
 | **READ-ONLY** | Only read and reference |
 
-### AI Behavior
+### AI(You) Behavior
 
 ```
 ALLOWED:
@@ -88,7 +88,7 @@ If modification is attempted:
 
 ### 1. PROJECT-CONTEXT.md (Required)
 
-AI references at **every session start** to understand project context:
+AI(You) references at **every session start** to understand project context:
 
 ```markdown
 # Project Context
@@ -138,7 +138,7 @@ Tech stack decided after discussion with AI:
 
 **To change**:
 1. User explicitly requests: "I want to discuss changing the stack"
-2. Discuss with AI (impact, migration cost analysis)
+2. Discuss with AI(You) (impact, migration cost analysis)
 3. On decision, update STACK-DECISION.md with new version
 4. Create DEC-nnn record
 
@@ -174,15 +174,15 @@ Exact versions for all dependencies:
 ```
 1. Write PRD (refs/prd/)
    └─ User defines requirements
-   └─ AI helps concretize
+   └─ AI(You) helps concretize
 
-2. AI Research (refs/research/)
-   └─ AI researches latest + stable technologies
+2. AI(You) Research (refs/research/)
+   └─ AI(You) researches latest + stable technologies
    └─ References official docs, release notes
    └─ Documents research results
 
 3. Stack Discussion
-   └─ AI suggests options + pros/cons analysis
+   └─ AI(You) suggests options + pros/cons analysis
    └─ Discuss with user
    └─ Final decision
 
@@ -201,7 +201,7 @@ Exact versions for all dependencies:
 ```
 1. User request: "I want to change the stack" or "I want to use Vue instead of React"
 
-2. AI Analysis:
+2. AI(You) Analysis:
    - Check current progress
    - Analyze impact scope
    - Estimate migration cost
@@ -218,9 +218,9 @@ Exact versions for all dependencies:
 
 ---
 
-## AI Research Guide
+## AI(You) Research Guide
 
-### What AI Should Check When Selecting Technology
+### What AI(You) Should Check When Selecting Technology
 
 1. **Stability**
    - Is it an LTS version?
@@ -271,9 +271,9 @@ Exact versions for all dependencies:
 | `PROJECT-CONTEXT.md` | Updatable on user request |
 | `prd/*.md` | Updatable on user request |
 | `stack/STACK-DECISION.md` | **LOCKED** - Only after change discussion |
-| `stack/STACK-RESEARCH.md` | AI can freely update |
+| `stack/STACK-RESEARCH.md` | AI(You) can freely update |
 | `dependencies/VERSIONS.lock.md` | **LOCKED** - Only after change discussion |
-| `research/*.md` | AI can freely create/update |
+| `research/*.md` | AI(You) can freely create/update |
 
 ---
 

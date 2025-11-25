@@ -114,7 +114,7 @@ The script will ask for the following:
 5. GitHub organization: (Enter for personal account)
 6. Add IT development stack?: y/n
    - Backend API (FastAPI)
-   - Backend AI (Inference Service)
+   - Backend AI(ML) (Inference Service)
    - Frontend Web (React + Vite)
    - Mobile App (Expo)
 ```
@@ -131,7 +131,7 @@ The script will ask for the following:
 
 ## Step 3: Define Project Context (2 minutes)
 
-### 3.1 refs/PROJECT-CONTEXT.md (Required - Discuss with AI first)
+### 3.1 refs/PROJECT-CONTEXT.md (Required - Discuss with AI(You) first)
 
 ```markdown
 # Project Context
@@ -154,13 +154,13 @@ The script will ask for the following:
 - {Items that must never change}
 ```
 
-### 3.2 Write PRD (Discuss with AI)
+### 3.2 Write PRD (Discuss with AI(You))
 
-Discuss project requirements with AI to write `refs/prd/PRD-001-overview.md`.
+Discuss project requirements with AI(You) to write `refs/prd/PRD-001-overview.md`.
 
-### 3.3 Decide Tech Stack (AI Research then Discussion)
+### 3.3 Decide Tech Stack (AI(You) Research then Discussion)
 
-1. AI writes research results in `refs/stack/STACK-RESEARCH.md`
+1. AI(You) writes research results in `refs/stack/STACK-RESEARCH.md`
 2. Discuss and finalize with user
 3. Write `refs/stack/STACK-DECISION.md` (LOCKED)
 4. Write `refs/dependencies/VERSIONS.lock.md` (LOCKED)
@@ -205,9 +205,9 @@ mkdir -p docs/frontend
 
 ---
 
-## Step 4: Start Development (AI-Driven)
+## Step 4: Start Development (AI(You)-Driven)
 
-**IMPORTANT**: AI handles all Git operations. User does not use Git directly.
+**IMPORTANT**: AI(You) handles all Git operations. User does not use Git directly.
 
 ### Development Principles
 
@@ -219,10 +219,10 @@ mkdir -p docs/frontend
    - Write tests first
    - Verify tests pass after implementation
 
-### Git Operations Handled by AI
+### Git Operations Handled by AI(You)
 
 ```bash
-# AI executes automatically
+# AI(You) executes automatically
 git checkout develop
 git checkout -b feature/my-feature
 # ... work ...
@@ -268,7 +268,7 @@ python3 scripts/count-tokens.py --report
 
 **Session Start**:
 ```
-Files AI should read:
+Files AI(You) should read:
 1. memory/NOW.md (current state)
 2. refs/PROJECT-CONTEXT.md (project context)
 3. refs/stack/STACK-DECISION.md (tech stack - LOCKED)
@@ -276,14 +276,14 @@ Files AI should read:
 
 **After Work**:
 ```
-Files AI should update:
+Files AI(You) should update:
 1. memory/NOW.md (status update)
 2. memory/timeline/YYYY-Wnn.md (work log)
 ```
 
 **When Making Important Decisions**:
 ```
-Files AI should create:
+Files AI(You) should create:
 1. memory/decisions/DEC-nnn-title.md
 2. Update memory/decisions/INDEX.md
 ```
@@ -394,8 +394,8 @@ docker compose down
 | File | Purpose | Change Process |
 |------|---------|----------------|
 | `refs/base/**/*` | Original Materials | **READ-ONLY - NEVER modify or delete** |
-| `refs/stack/STACK-DECISION.md` | Tech Stack | User request → AI analysis → Approval → Change |
-| `refs/dependencies/VERSIONS.lock.md` | Dependency Versions | User request → AI analysis → Approval → Change |
+| `refs/stack/STACK-DECISION.md` | Tech Stack | User request → AI(You) analysis → Approval → Change |
+| `refs/dependencies/VERSIONS.lock.md` | Dependency Versions | User request → AI(You) analysis → Approval → Change |
 
 ---
 
@@ -424,7 +424,7 @@ For projects with existing files (e.g., `refs/` already exists):
 | **Delete any file** | ✗ **NEVER** |
 | **Rename or move files** | ✗ **NEVER** |
 
-> **AI Violation Response**: If modification is attempted, STOP immediately and report to user.
+> **AI(You) Violation Response**: If modification is attempted, STOP immediately and report to user.
 
 ---
 

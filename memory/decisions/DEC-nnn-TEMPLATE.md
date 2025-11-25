@@ -2,7 +2,7 @@
 
 **ID**: DEC-{nnn}
 **Date**: {YYYY-MM-DD}
-**Author**: {Name or "AI Assistant + User"}
+**Author**: {Name or "AI(You) + User"}
 **Status**: Active | Superseded | Archived
 **Impact**: High | Medium | Low
 **Lines**: {CURRENT}/500

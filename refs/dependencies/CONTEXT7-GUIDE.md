@@ -14,14 +14,14 @@ Context7 is an MCP server that retrieves **up-to-date official documentation** f
 
 ---
 
-## AI Workflow
+## AI(You) Workflow
 
 ### 1. Stack Decision (Required)
 
 ```
 User: "Build a backend with FastAPI"
 
-AI Actions:
+AI(You) Actions:
 1. Verify Context7 MCP availability
 2. Resolve library ID with resolve-library-id
 3. Retrieve official docs with get-library-docs
@@ -196,7 +196,7 @@ get-library-docs(topic: "dependency injection", tokens: 3000)
 ### 2. Cache-First Approach
 
 ```
-AI Decision Flow:
+AI(You) Decision Flow:
 1. Check docs-cache/{dependency}/INDEX.md
 2. Verify required topic file exists
 3. Cache valid → Use cache

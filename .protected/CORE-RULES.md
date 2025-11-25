@@ -242,7 +242,7 @@ modification_requires:
 If user explicitly requests modification:
 
 ```
-1. AI asks for confirmation
+1. AI(You) asks for confirmation
 2. User acknowledges impact
 3. Create system/* branch
 4. Make modification

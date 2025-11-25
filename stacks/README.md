@@ -1,11 +1,11 @@
 # IT Development Stacks
 
-**Status**: Template (Created after AI discussion and user approval)
+**Status**: Template (Created after AI(You) discussion and user approval)
 **Purpose**: Development stack combinations suited to project needs
 
 > **IMPORTANT**: Stacks are NOT created during `init-project.sh`.
-> After project initialization, discuss with AI to decide the appropriate stack.
-> AI will create the stack after your approval.
+> After project initialization, discuss with AI(You) to decide the appropriate stack.
+> AI(You) will create the stack after your approval.
 
 ---
 
@@ -16,16 +16,16 @@
    └─ Memory system created
    └─ NO stacks created yet
 
-2. Discuss with AI
+2. Discuss with AI(You)
    └─ Describe project requirements
-   └─ AI researches and recommends stack
-   └─ AI writes refs/stack/STACK-RESEARCH.md
+   └─ AI(You) researches and recommends stack
+   └─ AI(You) writes refs/stack/STACK-RESEARCH.md
 
 3. User approves stack
-   └─ AI creates refs/stack/STACK-DECISION.md (LOCKED)
-   └─ AI creates refs/dependencies/VERSIONS.lock.md (LOCKED)
+   └─ AI(You) creates refs/stack/STACK-DECISION.md (LOCKED)
+   └─ AI(You) creates refs/dependencies/VERSIONS.lock.md (LOCKED)
 
-4. AI creates stack (from claude-project-templates/stacks/)
+4. AI(You) creates stack (from claude-project-templates/stacks/)
    └─ Copies selected components to project root
    └─ Creates docker-compose.yml (customized)
    └─ Creates Makefile (unified management)
@@ -33,14 +33,14 @@
    └─ Immediately deployable
 ```
 
-### How AI Creates Stack
+### How AI(You) Creates Stack
 
-AI copies files from `claude-project-templates/stacks/` to the project:
+AI(You) copies files from `claude-project-templates/stacks/` to the project:
 
 ```bash
 # Example: User approved FastAPI + React + PostgreSQL + Redis
 
-# AI copies:
+# AI(You) copies:
 claude-project-templates/stacks/backend/api/fastapi/ → project/backend/api/
 claude-project-templates/stacks/frontend/web/react/  → project/frontend/web/
 claude-project-templates/stacks/infra/db/            → project/infra/db/
@@ -49,7 +49,7 @@ claude-project-templates/stacks/Makefile             → project/Makefile
 claude-project-templates/stacks/docker-compose.yml   → project/docker-compose.yml (customized)
 ```
 
-**No scripts needed** - AI directly copies and customizes files.
+**No scripts needed** - AI(You) directly copies and customizes files.
 
 ---
 
@@ -132,7 +132,7 @@ make clean-all             # Remove everything including images
 | **Web API Server** | `api` | - | - | `db`, `cache`, `monitoring` |
 | **Web Fullstack** | `api` | `web` | - | `db`, `cache`, `proxy`, `monitoring` |
 | **Mobile App + Backend** | `api` | - | `app` | `db`, `cache`, `monitoring` |
-| **AI Service** | `api`, `ai` | `web` | - | `db`, `cache`, `monitoring` |
+| **AI(ML) Service** | `api`, `ai` | `web` | - | `db`, `cache`, `monitoring` |
 | **Web + Mobile** | `api` | `web` | `app` | `db`, `cache`, `proxy`, `monitoring` |
 
 ---
@@ -221,7 +221,7 @@ make clean-all             # Remove everything including images
 | Frontend (Web) | http://localhost:3000 | React/Vue/Svelte |
 | Backend (API) | http://localhost:8000 | FastAPI |
 | API Docs | http://localhost:8000/docs | Swagger UI |
-| Backend AI | http://localhost:8001 | Inference Service |
+| Backend AI(ML) | http://localhost:8001 | Inference Service |
 | PostgreSQL | localhost:5432 | Direct DB connection |
 | Redis | localhost:6379 | Direct cache connection |
 | Grafana | http://localhost:3001 | admin / admin |
@@ -268,9 +268,9 @@ All stacks are deployment-ready from creation:
 
 ## Important Notes
 
-1. **Stack is decided after AI discussion**
+1. **Stack is decided after AI(You) discussion**
    - NOT selected during init-project.sh
-   - AI researches and recommends based on requirements
+   - AI(You) researches and recommends based on requirements
    - Record in `refs/stack/STACK-DECISION.md` (LOCKED)
 
 2. **All stacks are deployment-ready**

@@ -51,18 +51,18 @@
     ├── prd/               (Product Requirements Documents)
     ├── stack/             LOCKED - Tech stack decisions
     │   ├── STACK-DECISION.md   (Final decision - no changes)
-    │   └── STACK-RESEARCH.md   (AI research results)
+    │   └── STACK-RESEARCH.md   (AI(You) research results)
     ├── dependencies/      LOCKED - Dependency versions
     │   ├── VERSIONS.lock.md    (Version lock - no changes)
     │   └── UPGRADE-LOG.md      (Upgrade history)
-    └── research/          (AI research materials)
+    └── research/          (AI(You) research materials)
 ```
 
 ---
 
-## Git Workflow (AI MUST Follow)
+## Git Workflow (AI(You) MUST Follow)
 
-**IMPORTANT**: User does NOT touch Git. AI handles ALL Git operations.
+**IMPORTANT**: User does NOT touch Git. AI(You) handles ALL Git operations.
 
 ### Branch Strategy (Enforced)
 
@@ -208,7 +208,7 @@ refs/dependencies/VERSIONS.lock.md <- Dependency versions (LOCKED)
    - "I want to change the stack" or "I want to use Vue instead of React"
    - Implicit requests are not processed
 
-2. **AI provides impact analysis**
+2. **AI(You) provides impact analysis**
    - Check current progress
    - Analyze affected files/code
    - Estimate migration cost
@@ -230,15 +230,15 @@ refs/dependencies/VERSIONS.lock.md <- Dependency versions (LOCKED)
 ```
 1. Write PRD (refs/prd/)
    └─ User defines requirements
-   └─ AI helps concretize
+   └─ AI(You) helps concretize
 
-2. AI Research (refs/stack/STACK-RESEARCH.md)
+2. AI(You) Research (refs/stack/STACK-RESEARCH.md)
    └─ Research latest + stable technologies
    └─ Reference official docs, release notes
    └─ Must Have: Free/open source, Mac ARM+Intel, Docker compatible
 
 3. Stack Discussion
-   └─ AI suggests options + pros/cons analysis
+   └─ AI(You) suggests options + pros/cons analysis
    └─ Discuss with user
    └─ Final decision
 

@@ -51,7 +51,7 @@
 - {Time constraint - e.g., MVP in 4 weeks}
 
 ### Team
-- {Team constraint - e.g., AI + solo developer}
+- {Team constraint - e.g., AI(You) + solo developer}
 
 ---
 
@@ -90,5 +90,5 @@
 
 ---
 
-**Note**: This file is referenced by AI to understand project context.
+**Note**: This file is referenced by AI(You) to understand project context.
 Changes require user confirmation before updating.

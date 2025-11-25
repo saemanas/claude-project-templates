@@ -13,7 +13,7 @@
 This file is LOCKED.
 To change:
 1. User explicitly requests: "I want to discuss changing the stack"
-2. AI provides impact analysis and discussion
+2. AI(You) provides impact analysis and discussion
 3. User gives final approval
 4. Create DEC-nnn record, then update
 ```
@@ -170,7 +170,7 @@ To change:
 ## How to Request Changes
 
 1. **User Request**: "I want to change the stack" or specific change request
-2. **AI Analysis**:
+2. **AI(You) Analysis**:
    - Impact relative to current progress
    - Migration cost estimation
    - Alternative suggestions

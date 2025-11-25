@@ -65,7 +65,7 @@ refs/base/
 
 ---
 
-## How AI Should Use This
+## How AI(You) Should Use This
 
 ### At Session Start
 
@@ -106,7 +106,7 @@ Per refs/base/client/requirements.xlsx:
 
 ## Violation Response
 
-If AI attempts to modify `refs/base/`:
+If AI(You) attempts to modify `refs/base/`:
 
 1. **STOP immediately**
 2. **Report the attempted action to user**

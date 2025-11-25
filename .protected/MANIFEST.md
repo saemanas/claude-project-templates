@@ -20,7 +20,7 @@ These principles are implemented through specific files and rules. Modifying the
 ### Protection Level
 
 ```
-PROTECTED = Cannot be modified by AI without explicit user request
+PROTECTED = Cannot be modified by AI(You) without explicit user request
 LOCKED    = Cannot be modified at all (system critical)
 ```
 
@@ -81,7 +81,7 @@ docs/**/*                    # Project documentation
 
 ## Modification Rules
 
-### For AI Assistant
+### For AI(You) Assistant
 
 ```
 IF file in LOCKED:
@@ -129,7 +129,7 @@ IF protected file modified in PR:
 "Change the rule in [filename] to [new rule]"
 ```
 
-### AI Should Confirm:
+### AI(You) Should Confirm:
 
 ```
 "This file is protected because it defines core system rules.
@@ -225,4 +225,4 @@ These rules are the foundation of the system and should NEVER change without sig
 **This manifest is LOCKED and cannot be modified.**
 
 **Last Updated**: 2025-11-26
-**Protected By**: pre-commit + CI/CD + AI instruction
+**Protected By**: pre-commit + CI/CD + AI(You) instruction

@@ -162,7 +162,7 @@ Each dependency directory must include `INDEX.md`:
 
 ---
 
-## AI Behavior Rules
+## AI(You) Behavior Rules
 
 ### 1. Adding New Dependency
 ```

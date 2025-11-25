@@ -67,7 +67,7 @@ This system works with **GitHub Free** (Public or Private):
 | GitHub Actions | **Remote validation** (2,000 min/month) |
 | PR Validation | **CI/CD checks** (blocks bad PRs) |
 
-**Note**: AI handles ALL Git operations. No manual Git needed.
+**Note**: AI(You) handles ALL Git operations. No manual Git needed.
 
 ### Quick Install (macOS)
 
@@ -95,7 +95,7 @@ claude-project-templates/
 ├── README.md                  # This file
 ├── QUICKSTART.md              # 5-minute manual guide
 ├── RULES.md                   # Zero-tolerance rules
-├── CLAUDE-TEMPLATE.md         # AI assistant guide template
+├── CLAUDE-TEMPLATE.md         # AI(You) assistant guide template
 │
 ├── memory/                    # Memory system templates
 │   ├── NOW-TEMPLATE.md
@@ -287,7 +287,7 @@ Types:
    gh pr create --base develop
    ```
 
-5. **Every AI session**:
+5. **Every AI(You) session**:
    ```
    "Read memory/NOW.md"
    ```
