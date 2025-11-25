@@ -5,6 +5,45 @@
 
 ---
 
+## Step 0: Claude Code Auto-Approve Setup (Optional but Recommended)
+
+Claude Code asks for permission on every shell command by default. For smooth AI-driven development, configure auto-approve:
+
+### Global Setting (All Projects)
+
+Edit `~/.claude/settings.json`:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
+```
+
+### Project-Only Setting
+
+Create `.claude/settings.local.json` in your project root with the same content.
+
+### GitHub Repo Delete Permission (Optional)
+
+If you want AI to delete test repositories:
+
+```bash
+gh auth refresh -h github.com -s delete_repo
+```
+
+> **Note**: Auto-approve settings are per-user. They cannot be distributed via templates for security reasons.
+
+---
+
 ## Step 1: Run Init Script (1 minute)
 
 ```bash
