@@ -25,7 +25,7 @@
    └─ AI creates refs/stack/STACK-DECISION.md (LOCKED)
    └─ AI creates refs/dependencies/VERSIONS.lock.md (LOCKED)
 
-4. AI creates stack (from PICSO/templates/stacks/)
+4. AI creates stack (from claude-project-templates/stacks/)
    └─ Copies selected components to project root
    └─ Creates docker-compose.yml (customized)
    └─ Creates Makefile (unified management)
@@ -35,18 +35,18 @@
 
 ### How AI Creates Stack
 
-AI copies files from `PICSO/templates/stacks/` to the project:
+AI copies files from `claude-project-templates/stacks/` to the project:
 
 ```bash
 # Example: User approved FastAPI + React + PostgreSQL + Redis
 
 # AI copies:
-templates/stacks/backend/api/fastapi/ → project/backend/api/
-templates/stacks/frontend/web/react/  → project/frontend/web/
-templates/stacks/infra/db/            → project/infra/db/
-templates/stacks/infra/cache/         → project/infra/cache/
-templates/stacks/Makefile             → project/Makefile
-templates/stacks/docker-compose.yml   → project/docker-compose.yml (customized)
+claude-project-templates/stacks/backend/api/fastapi/ → project/backend/api/
+claude-project-templates/stacks/frontend/web/react/  → project/frontend/web/
+claude-project-templates/stacks/infra/db/            → project/infra/db/
+claude-project-templates/stacks/infra/cache/         → project/infra/cache/
+claude-project-templates/stacks/Makefile             → project/Makefile
+claude-project-templates/stacks/docker-compose.yml   → project/docker-compose.yml (customized)
 ```
 
 **No scripts needed** - AI directly copies and customizes files.

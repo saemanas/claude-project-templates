@@ -14,7 +14,7 @@ git clone <this-repo-url> project-memory-templates
 cd project-memory-templates
 
 # Run interactive project initialization
-./templates/scripts/init-project.sh
+./scripts/init-project.sh
 ```
 
 **That's it!** The script will:
@@ -89,7 +89,7 @@ gh auth login
 ## What's Included
 
 ```
-templates/
+claude-project-templates/
 ├── README.md                  # This file
 ├── QUICKSTART.md              # 5-minute manual guide
 ├── RULES.md                   # Zero-tolerance rules

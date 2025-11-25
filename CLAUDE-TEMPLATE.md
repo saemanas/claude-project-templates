@@ -569,7 +569,7 @@ This project aims to achieve:
 
 ### Templates
 - [PROJECT_MEMORY_TEMPLATE.md](PROJECT_MEMORY_TEMPLATE.md) - Universal template guide
-- [templates/](templates/) - Template files
+- [claude-project-templates/](claude-project-templates/) - Template files
 
 ### External References (if applicable)
 - {RESOURCE_1}: {URL}

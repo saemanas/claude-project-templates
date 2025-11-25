@@ -9,7 +9,7 @@
 
 ```bash
 # Navigate to PICSO templates
-cd /path/to/PICSO/templates
+cd /path/to/claude-project-templates
 
 # Run complete initialization
 ./scripts/init-project.sh

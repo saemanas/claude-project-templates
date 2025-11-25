@@ -285,7 +285,7 @@ collect_project_info() {
     echo "  After project setup, discuss with AI to decide the appropriate stack."
     echo "  AI will create the stack after your approval."
     echo ""
-    echo "  Available stacks (templates/stacks/):"
+    echo "  Available stacks (claude-project-templates/stacks/):"
     echo "    - backend/api (FastAPI)"
     echo "    - backend/ai (Inference Service)"
     echo "    - frontend/web (React + Vite)"
