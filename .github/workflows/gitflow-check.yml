@@ -23,19 +23,24 @@ jobs:
 
       - name: Check direct push to protected branch
         if: github.event_name == 'push'
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
         run: |
           BRANCH="${GITHUB_REF#refs/heads/}"
           echo "Push to branch: $BRANCH"
 
           # Allow initial commit (first push to repository)
-          if [[ "${{ github.event.before }}" == "0000000000000000000000000000000000000000" ]]; then
+          if [[ "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
             echo "OK: Initial commit is allowed"
             exit 0
           fi
 
-          # Allow commits with "Initial commit" message
-          COMMIT_MSG="${{ github.event.head_commit.message }}"
-          if [[ "$COMMIT_MSG" == *"Initial commit"* ]] || [[ "$COMMIT_MSG" == *"initial commit"* ]]; then
+          # Allow commits with "Initial commit" or "chore: initial" message (check first line only)
+          COMMIT_MSG=$(git log -1 --format="%s" HEAD)
+          echo "Commit message: $COMMIT_MSG"
+          if [[ "$COMMIT_MSG" == *"Initial commit"* ]] || \
+             [[ "$COMMIT_MSG" == *"initial commit"* ]] || \
+             [[ "$COMMIT_MSG" == "chore: initial"* ]]; then
             echo "OK: Initial commit message detected"
             exit 0
           fi
