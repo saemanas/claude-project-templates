@@ -97,3 +97,6 @@ ehthumbs.db
 *.crt
 credentials.json
 secrets.json
+
+# Claude Code local settings (personal preferences)
+.claude/

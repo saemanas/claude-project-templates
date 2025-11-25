@@ -481,6 +481,24 @@ apply_templates() {
     cp "$TEMPLATE_DIR/.gitignore" .gitignore 2>/dev/null || true
     log_success "Copied .gitignore"
 
+    # Create .claude/settings.local.json for auto-approve
+    mkdir -p .claude
+    cat > .claude/settings.local.json << 'CLAUDE_SETTINGS_EOF'
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
+CLAUDE_SETTINGS_EOF
+    log_success "Created .claude/settings.local.json (auto-approve enabled)"
+
     # Copy refs/ templates
     log_info "Copying refs/ templates..."
     cp "$TEMPLATE_DIR/refs/README.md" refs/ 2>/dev/null || true

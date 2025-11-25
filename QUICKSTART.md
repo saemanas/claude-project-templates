@@ -28,9 +28,26 @@ Edit `~/.claude/settings.json`:
 }
 ```
 
-### Project-Only Setting
+### Project-Only Setting (Recommended)
 
-Create `.claude/settings.local.json` in your project root with the same content.
+Create `.claude/settings.local.json` in your project root:
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(*)",
+      "Read(*)",
+      "Write(*)",
+      "Edit(*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
+```
+
+> **Note**: Local settings (`.claude/settings.local.json`) override global settings (`~/.claude/settings.json`). If you approved commands individually in a session, they get saved to local settings with specific patterns, which then override your global `Bash(*)` wildcard. Use the full config above to fix this.
 
 ### GitHub CLI Permissions (Recommended)
 
