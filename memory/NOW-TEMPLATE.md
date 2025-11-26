@@ -1,73 +1,63 @@
 # Current Project State
 
-**Updated**: {YYYY-MM-DD HH:MM} (Auto-updated)
+**Updated**: {YYYY-MM-DD HH:MM}
 **Phase**: {CURRENT_PHASE}
-**Lines**: {CURRENT}/300
+**Lines**: {CURRENT}/150
 
 ---
 
 ## Status Dashboard
 
-### {Component 1}
-- **Total**: {count/metric}
-- **Status**: {design/implementation/complete/blocked}
-- **Detail**: [docs/{topic}/README.md](../docs/{topic}/README.md)
+### {Component 1} {STATUS_EMOJI}
 
-### {Component 2}
 - **Total**: {count/metric}
 - **Status**: {status}
-- **Detail**: [docs/{topic}/README.md](../docs/{topic}/README.md)
+- **Detail**: {brief or link}
 
-### {Component 3}
+### {Component 2} {STATUS_EMOJI}
+
 - **Total**: {count/metric}
 - **Status**: {status}
-- **Detail**: [docs/{topic}/README.md](../docs/{topic}/README.md)
+- **Detail**: {brief or link}
+
+### {Component 3} {STATUS_EMOJI}
+
+- **Total**: {count/metric}
+- **Status**: {status}
+- **Detail**: {brief or link}
 
 ---
 
 ## Active This Week
 
 ### In Progress
-- [ ] {Task 1 description}
-- [ ] {Task 2 description}
-- [ ] {Task 3 description}
+
+- [ ] {Task description}
 
 ### Blocked
-- [ ] {Blocked task} - Reason: {blocker description}
+
+- None currently
 
 ### Completed (Last 7 Days)
-- [x] {YYYY-MM-DD}: {Completed task 1}
-- [x] {YYYY-MM-DD}: {Completed task 2}
-- [x] {YYYY-MM-DD}: {Completed task 3}
 
-**Detail**: [memory/timeline/{YYYY-Wnn}.md](./timeline/{YYYY-Wnn}.md)
+- [x] {YYYY-MM-DD}: {Completed task}
+- [x] {YYYY-MM-DD}: {Completed task}
+
+**Detail**: [timeline/{YYYY-Wnn}.md](./timeline/{YYYY-Wnn}.md)
 
 ---
 
 ## Critical Facts (Quick Reference)
 
 ### {Topic 1}
-```
-{Key information in code block format}
-- {Bullet point 1}
-- {Bullet point 2}
-- {Bullet point 3}
 
+```
+{Key information}
 Why: {Rationale}
-Decision: DEC-{nnn} ({YYYY-MM-DD})
 ```
 
 ### {Topic 2}
-```
-{Key information}
-- {Important detail 1}
-- {Important detail 2}
 
-Why: {Rationale}
-Decision: DEC-{nnn}
-```
-
-### {Topic 3}
 ```
 {Key information}
 Why: {Rationale}
@@ -79,70 +69,25 @@ Why: {Rationale}
 
 | ID | Date | Title | Impact |
 |----|------|-------|--------|
-| DEC-{nnn} | {YYYY-MM-DD} | {Decision title} | High/Medium/Low |
-| DEC-{nnn} | {YYYY-MM-DD} | {Decision title} | High/Medium/Low |
-| DEC-{nnn} | {YYYY-MM-DD} | {Decision title} | High/Medium/Low |
+| DEC-{nnn} | {YYYY-MM-DD} | {Title} | High |
 
-**Detail**: [memory/decisions/INDEX.md](./decisions/INDEX.md)
+**Detail**: [decisions/INDEX.md](./decisions/INDEX.md)
 
 ---
 
 ## Quick Navigation
 
-**Need to**:
-- 🔍 Find something? → [FIND.md](./FIND.md)
-- 📅 See timeline? → [timeline/{YYYY-Wnn}.md](./timeline/{YYYY-Wnn}.md)
-- 📊 {Topic 1} info? → [docs/{topic-1}/README.md](../docs/{topic-1}/README.md)
-- 📊 {Topic 2} info? → [docs/{topic-2}/README.md](../docs/{topic-2}/README.md)
-- 📊 {Topic 3} info? → [docs/{topic-3}/README.md](../docs/{topic-3}/README.md)
-- ⚖️ Past decisions? → [decisions/INDEX.md](./decisions/INDEX.md)
-
----
-
-## File Registry (Auto-tracked)
-
-**Last 7 days**:
-- Created: {n} files ({categories})
-- Modified: {n} files
-- Deleted: {n} files
-
-**Detail**: [memory/timeline/{YYYY-Wnn}.md](./timeline/{YYYY-Wnn}.md)
-
----
-
-## Development Environment
-
-**Tools**:
-- Docker & Docker Compose (all services)
-- Makefile (command shortcuts)
-- Git + gh CLI (version control)
-
-**Quick Commands**:
-```bash
-make up          # Start environment
-make test        # Run tests
-make logs        # View logs
-make shell-*     # Access shells
-```
-
-**Important**: No venv/virtualenv. All development in Docker.
+- Find something? → [FIND.md](./FIND.md)
+- Timeline? → [timeline/{YYYY-Wnn}.md](./timeline/)
+- Decisions? → [decisions/INDEX.md](./decisions/INDEX.md)
 
 ---
 
 ## When to Update This File
 
-🔄 Auto-update triggers:
-- Every Friday 23:59 (weekly rollup)
-- When new decision made
-- When phase changes
-- When major milestone reached
-
-📝 Manual update needed:
-- Status changes (blocked → in progress)
-- New active tasks
-- Critical facts changed
+🔄 Auto-update: Weekly rollup, new decisions, phase changes
+📝 Manual: Status changes, new tasks
 
 ---
 
-**Token cost**: ~1,200 tokens (300 lines)
-**Next file**: If > 300 lines, archive old sections to timeline
+**Token cost**: ~800 tokens (150 lines max)

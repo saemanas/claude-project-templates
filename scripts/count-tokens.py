@@ -24,10 +24,11 @@ except ImportError:
     TIKTOKEN_AVAILABLE = False
 
 # Token budgets (zero tolerance limits)
+# Reduced budgets based on real-world usage optimization (2025-11-26)
 TOKEN_BUDGETS = {
-    "memory/NOW.md": 1200,
-    "memory/FIND.md": 600,
-    "memory/decisions/INDEX.md": 1200,
+    "memory/NOW.md": 800,           # Was 1200, reduced for efficiency
+    "memory/FIND.md": 300,          # Was 600, reduced for efficiency
+    "memory/decisions/INDEX.md": 400,  # Was 1200, reduced for efficiency
     "CLAUDE.md": 2500,
 }
 

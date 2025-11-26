@@ -27,10 +27,11 @@ ERRORS=0
 WARNINGS=0
 
 # Line limits (zero tolerance)
+# Reduced limits based on real-world usage optimization (2025-11-26)
 declare -A LINE_LIMITS=(
-    ["memory/NOW.md"]=300
-    ["memory/FIND.md"]=200
-    ["memory/decisions/INDEX.md"]=300
+    ["memory/NOW.md"]=150      # Was 300, reduced for efficiency
+    ["memory/FIND.md"]=50      # Was 200, reduced for efficiency
+    ["memory/decisions/INDEX.md"]=50  # Was 300, reduced for efficiency
 )
 
 # Pattern-based limits
@@ -157,10 +158,11 @@ check_find_md_structure() {
         return 0
     fi
 
+    # Simplified structure check (optimized 2025-11-26)
     local required_sections=(
-        "By Topic"
-        "By Time"
-        "By Question Type"
+        "Key Documents"
+        "By Question"
+        "Timeline"
     )
 
     for section in "${required_sections[@]}"; do

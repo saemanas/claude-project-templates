@@ -56,10 +56,10 @@ jobs:
             return 0
           }
 
-          # Core files
-          check_lines "memory/NOW.md" 300 || ERRORS=$((ERRORS+1))
-          check_lines "memory/FIND.md" 200 || ERRORS=$((ERRORS+1))
-          check_lines "memory/decisions/INDEX.md" 300 || ERRORS=$((ERRORS+1))
+          # Core files (reduced limits based on optimization 2025-11-26)
+          check_lines "memory/NOW.md" 150 || ERRORS=$((ERRORS+1))
+          check_lines "memory/FIND.md" 50 || ERRORS=$((ERRORS+1))
+          check_lines "memory/decisions/INDEX.md" 50 || ERRORS=$((ERRORS+1))
 
           # Timeline files
           for f in memory/timeline/????-W??.md; do
