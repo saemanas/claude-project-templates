@@ -60,15 +60,15 @@ jobs:
           IS_TEMPLATE=false
           [ -f "memory/NOW-TEMPLATE.md" ] && IS_TEMPLATE=true
 
-          # Core files (reduced limits based on optimization 2025-11-26)
+          # Core files (v2.1.0: FIND expanded to 100 lines)
           if [ "$IS_TEMPLATE" = true ]; then
             check_lines "memory/NOW-TEMPLATE.md" 150 || ERRORS=$((ERRORS+1))
-            check_lines "memory/FIND-TEMPLATE.md" 50 || ERRORS=$((ERRORS+1))
-            check_lines "memory/decisions/INDEX-TEMPLATE.md" 50 || ERRORS=$((ERRORS+1))
+            check_lines "memory/FIND-TEMPLATE.md" 100 || ERRORS=$((ERRORS+1))
+            check_lines "memory/decisions/INDEX-TEMPLATE.md" 100 || ERRORS=$((ERRORS+1))
           else
             check_lines "memory/NOW.md" 150 || ERRORS=$((ERRORS+1))
-            check_lines "memory/FIND.md" 50 || ERRORS=$((ERRORS+1))
-            check_lines "memory/decisions/INDEX.md" 50 || ERRORS=$((ERRORS+1))
+            check_lines "memory/FIND.md" 100 || ERRORS=$((ERRORS+1))
+            check_lines "memory/decisions/INDEX.md" 100 || ERRORS=$((ERRORS+1))
           fi
 
           # Timeline files
