@@ -77,15 +77,32 @@ release/* - Release prep (from develop)
 
 ### Before Starting Any Work
 
+**CRITICAL**: NEVER work on main or develop branches directly!
+
 ```bash
 # 1. Always start from develop
 git checkout develop
 git pull origin develop
 
-# 2. Create appropriate branch
+# 2. IMMEDIATELY create feature branch (do NOT work on develop!)
 git checkout -b feature/{short-description}
 # or: bugfix/{issue-description}
 # or: hotfix/{urgent-fix}
+
+# 3. Verify you're on feature branch
+git branch --show-current  # Must show feature/*, NOT main or develop
+```
+
+**If you accidentally started work on main/develop**:
+```bash
+# Save your work
+git stash
+
+# Create feature branch
+git checkout -b feature/my-work
+
+# Restore your work
+git stash pop
 ```
 
 ### Commit Message Format (REQUIRED)
@@ -573,12 +590,14 @@ See [RULES.md](./RULES.md) for:
 - Skip weekly log entries (lose history)
 - Duplicate information across files (sync issues)
 - Let files grow beyond line limits (token bloat)
+- **Work on main/develop branches directly** (NEVER checkout main/develop for work)
+- **Commit directly to main/develop** (always use feature/* branches)
+- **Push directly to main/develop** (use Pull Requests only)
 - **Use venv/virtualenv/conda** (Docker only!)
 - **Install packages locally** (use Docker containers)
 - **Run code outside Docker** (except Makefile commands)
 - **Modify protected files** (.protected/, .githooks/, scripts/, RULES.md)
 - **Bypass pre-commit hooks** (git commit --no-verify)
-- **Push directly to main/develop** (use feature/* branches)
 - **Modify or delete refs/base/** (READ-ONLY - original project materials)
 - **Change STACK-DECISION.md/VERSIONS.lock.md** without user explicit request
 - {PROJECT_SPECIFIC_DON'T_1}

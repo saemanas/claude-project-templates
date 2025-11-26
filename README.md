@@ -278,13 +278,19 @@ make clean
 
 ### Daily Development
 
+**⚠️ NEVER work on main/develop directly! Always use feature branches.**
+
 ```bash
 # Start environment
 cd stacks && make up
 
-# Create feature branch
+# Create feature branch (REQUIRED)
 git checkout develop
-git checkout -b feature/my-feature
+git pull origin develop
+git checkout -b feature/my-feature  # IMMEDIATELY create branch
+
+# Verify you're on feature branch
+git branch --show-current  # Must show "feature/my-feature"
 
 # Make changes (Docker auto-reloads)
 # ...
