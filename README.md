@@ -4,7 +4,7 @@
 
 | Version | Last Updated | Status |
 |---------|--------------|--------|
-| 2.1.0 | 2025-11-26 | Stable |
+| 2.1.1 | 2025-11-27 | Stable |
 
 ---
 
@@ -142,7 +142,7 @@ claude-project-templates/
 │   ├── apply-to-existing.sh           # Apply to existing project
 │   ├── validate-memory.sh             # Validation + Session ID check
 │   ├── count-tokens.py                # Token counter
-│   ├── generate-index.sh              # Auto-index generator (NEW)
+│   ├── generate-index.sh              # Auto-index generator
 │   └── archive-old-logs.sh            # Archive manager
 │
 ├── .githooks/                         # Local enforcement
@@ -176,7 +176,8 @@ main (production) ────────────────────�
         ├── feature/xxx ────────────────────┤ (PR only)
         ├── bugfix/xxx ─────────────────────┤
         ├── hotfix/xxx ─────────────────────┤ (also to main)
-        └── release/x.x.x ──────────────────┘
+        ├── release/x.x.x ──────────────────┤
+        └── system/xxx ─────────────────────┘ (protected files)
 ```
 
 ### Rules (Enforced Automatically)
@@ -184,11 +185,12 @@ main (production) ────────────────────�
 | Branch | Direct Commit | Allowed Sources |
 |--------|---------------|-----------------|
 | `main` | **BLOCKED** | release/*, hotfix/* via PR |
-| `develop` | **BLOCKED** | feature/*, bugfix/* via PR |
+| `develop` | **BLOCKED** | feature/*, bugfix/*, system/* via PR |
 | `feature/*` | Allowed | - |
 | `bugfix/*` | Allowed | - |
 | `hotfix/*` | Allowed | - |
 | `release/*` | Allowed | - |
+| `system/*` | Allowed | For protected file changes only |
 
 ### Workflow
 
@@ -218,13 +220,17 @@ gh pr create --base develop  # CI/CD validates!
 | Weekly (Sunday) | Archive old logs | Auto-archive workflow |
 | Weekly (Friday) | Token report | Weekly report workflow |
 
-### New in v2.1: Session Verification & Memory Sync
+### Key Features in v2.1
 
 **Session ID Verification**: AI must read `memory/NOW.md` and state Session ID before any work.
 
 **Memory Sync Enforcement**: Any file change requires `memory/` update (BLOCKED if missing).
 
+**System File Tracking**: Changes to scripts/, .githooks/, RULES.md also require memory update.
+
 **Auto-Index Generation**: Code changes trigger automatic `refs/index/INDEX.md` regeneration.
+
+**File Split Support**: Large files (>300 lines) can be split into indexed folders (e.g., `PRD-002/`).
 
 ### Pre-commit Example
 
@@ -306,7 +312,7 @@ make clean
 
 ### Daily Development
 
-**⚠️ NEVER work on main/develop directly! Always use feature branches.**
+**NEVER work on main/develop directly! Always use feature branches.**
 
 ```bash
 # Start environment
@@ -426,6 +432,14 @@ chmod +x scripts/*.sh scripts/*.py .githooks/*
 ---
 
 ## Version History
+
+### v2.1.1 (2025-11-27)
+
+- **System file tracking** - scripts/, .githooks/, RULES.md changes require memory update
+- **File split support** - Large files split into indexed folders (PRD-002/, STEP-1/)
+- **generate-index.sh timeout fix** - 10-second timeout, fixed find syntax
+- **system/* branch support** - For protected file changes
+- **Token/line limit fixes** - INDEX-TEMPLATE.md, FIND.md optimized
 
 ### v2.1.0 (2025-11-26)
 
