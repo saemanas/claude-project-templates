@@ -188,6 +188,19 @@ Every PR must include:
 
 ---
 
+## AI Commit/Merge Protocol (MANDATORY)
+
+❌ NEVER commit without showing content to user first
+❌ NEVER merge PR without explicit user approval
+❌ NEVER assume silence = approval
+
+✅ Create/Edit → Show content → Wait for approval → Commit
+✅ Create PR → Show link → Wait for approval → Merge
+
+**Detail**: [RULES.md Section 8](./RULES.md)
+
+---
+
 ## Project References (refs/) - Tech Stack Management
 
 ### refs/base/ - Original Project Materials (CRITICAL)
