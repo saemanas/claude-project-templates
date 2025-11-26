@@ -181,6 +181,25 @@ THEN: memory/ should also be updated
 Warning if code changed without memory update
 ```
 
+### System File Change → Memory Update
+
+```
+IF: scripts/*, .githooks/*, .github/workflows/* changed
+THEN: memory/ should also be updated
+
+System files include:
+├─ scripts/*.sh, scripts/*.py (automation)
+├─ .githooks/* (pre-commit, commit-msg)
+├─ .github/workflows/*.yml (CI/CD)
+└─ RULES.md, CLAUDE.md, GITFLOW.md (project rules)
+
+Log in timeline with:
+├─ What: Brief description of change
+├─ Why: Reason for change
+├─ Changes: List of modifications
+└─ Impact: Effect on project workflow
+```
+
 ### Decision → INDEX Update
 
 ```

@@ -285,6 +285,7 @@ echo ""
 echo -e "${BLUE}[Sync]${NC} Checking file-memory synchronization..."
 
 PROJECT_FILE_CHANGED=false
+SYSTEM_FILE_CHANGED=false
 MEMORY_CHANGED=false
 
 for file in $STAGED_FILES; do
@@ -293,11 +294,11 @@ for file in $STAGED_FILES; do
         memory/*.md)
             MEMORY_CHANGED=true
             ;;
-        # System files (exempt from memory update requirement)
-        .githooks/*|.github/*|scripts/*)
-            # System files don't require memory update
+        # System files (NOW require memory update)
+        .githooks/*|.github/*|scripts/*|RULES.md|CLAUDE.md|GITFLOW.md)
+            SYSTEM_FILE_CHANGED=true
             ;;
-        # Template files (exempt)
+        # Template files (exempt - template repo only)
         *-TEMPLATE.md|CLAUDE-TEMPLATE.md)
             # Templates don't require memory update
             ;;
@@ -308,14 +309,20 @@ for file in $STAGED_FILES; do
     esac
 done
 
-if $PROJECT_FILE_CHANGED && ! $MEMORY_CHANGED; then
+if ($PROJECT_FILE_CHANGED || $SYSTEM_FILE_CHANGED) && ! $MEMORY_CHANGED; then
     echo -e "${RED}[BLOCKED]${NC} Files changed without memory update"
     echo ""
-    echo "  ${YELLOW}AI must update memory when changing ANY project file:${NC}"
+    if $SYSTEM_FILE_CHANGED; then
+        echo -e "  ${YELLOW}System files changed - memory update required:${NC}"
+        echo "    - scripts/, .githooks/, .github/workflows/"
+        echo "    - RULES.md, CLAUDE.md, GITFLOW.md"
+        echo ""
+    fi
+    echo -e "  ${YELLOW}AI must update memory when changing ANY project file:${NC}"
     echo "    - memory/NOW.md (update Session ID + status)"
     echo "    - memory/timeline/YYYY-Wnn.md (log changes)"
     echo ""
-    echo "  ${CYAN}This ensures ALL changes are tracked across sessions.${NC}"
+    echo -e "  ${CYAN}This ensures ALL changes are tracked across sessions.${NC}"
     echo ""
     ((ERRORS++))
 else
