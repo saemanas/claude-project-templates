@@ -56,10 +56,20 @@ jobs:
             return 0
           }
 
+          # Detect template repository
+          IS_TEMPLATE=false
+          [ -f "memory/NOW-TEMPLATE.md" ] && IS_TEMPLATE=true
+
           # Core files (reduced limits based on optimization 2025-11-26)
-          check_lines "memory/NOW.md" 150 || ERRORS=$((ERRORS+1))
-          check_lines "memory/FIND.md" 50 || ERRORS=$((ERRORS+1))
-          check_lines "memory/decisions/INDEX.md" 50 || ERRORS=$((ERRORS+1))
+          if [ "$IS_TEMPLATE" = true ]; then
+            check_lines "memory/NOW-TEMPLATE.md" 150 || ERRORS=$((ERRORS+1))
+            check_lines "memory/FIND-TEMPLATE.md" 50 || ERRORS=$((ERRORS+1))
+            check_lines "memory/decisions/INDEX-TEMPLATE.md" 50 || ERRORS=$((ERRORS+1))
+          else
+            check_lines "memory/NOW.md" 150 || ERRORS=$((ERRORS+1))
+            check_lines "memory/FIND.md" 50 || ERRORS=$((ERRORS+1))
+            check_lines "memory/decisions/INDEX.md" 50 || ERRORS=$((ERRORS+1))
+          fi
 
           # Timeline files
           for f in memory/timeline/????-W??.md; do
@@ -126,25 +136,41 @@ jobs:
           echo "Checking required file structure..."
           WARNINGS=0
 
-          # Required files
-          if [ ! -f "memory/NOW.md" ]; then
-            echo "::error::Required file missing: memory/NOW.md"
-            exit 1
+          # Detect if this is a template repository (has *-TEMPLATE.md files)
+          IS_TEMPLATE=false
+          if [ -f "memory/NOW-TEMPLATE.md" ]; then
+            IS_TEMPLATE=true
+            echo "Template repository detected - checking template files"
+          fi
+
+          # Required files (NOW.md or NOW-TEMPLATE.md)
+          if [ "$IS_TEMPLATE" = true ]; then
+            if [ ! -f "memory/NOW-TEMPLATE.md" ]; then
+              echo "::error::Required file missing: memory/NOW-TEMPLATE.md"
+              exit 1
+            fi
+            NOW_FILE="memory/NOW-TEMPLATE.md"
+          else
+            if [ ! -f "memory/NOW.md" ]; then
+              echo "::error::Required file missing: memory/NOW.md"
+              exit 1
+            fi
+            NOW_FILE="memory/NOW.md"
           fi
 
           # Recommended files (warnings only)
-          [ ! -f "memory/FIND.md" ] && echo "::warning::Recommended file missing: memory/FIND.md" && WARNINGS=$((WARNINGS+1))
-          [ ! -f "CLAUDE.md" ] && echo "::warning::Recommended file missing: CLAUDE.md" && WARNINGS=$((WARNINGS+1))
-
-          # Check NOW.md structure
-          if [ -f "memory/NOW.md" ]; then
-            for section in "Status Dashboard" "Active This Week" "Quick Navigation"; do
-              if ! grep -q "$section" memory/NOW.md; then
-                echo "::warning file=memory/NOW.md::Missing recommended section: $section"
-                WARNINGS=$((WARNINGS+1))
-              fi
-            done
+          if [ "$IS_TEMPLATE" = false ]; then
+            [ ! -f "memory/FIND.md" ] && echo "::warning::Recommended file missing: memory/FIND.md" && WARNINGS=$((WARNINGS+1))
+            [ ! -f "CLAUDE.md" ] && echo "::warning::Recommended file missing: CLAUDE.md" && WARNINGS=$((WARNINGS+1))
           fi
+
+          # Check NOW.md/NOW-TEMPLATE.md structure
+          for section in "Status Dashboard" "Active This Week" "Quick Navigation"; do
+            if ! grep -q "$section" "$NOW_FILE"; then
+              echo "::warning file=$NOW_FILE::Missing recommended section: $section"
+              WARNINGS=$((WARNINGS+1))
+            fi
+          done
 
           echo "Structure check complete with $WARNINGS warning(s)"
 

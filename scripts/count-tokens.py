@@ -30,6 +30,11 @@ TOKEN_BUDGETS = {
     "memory/FIND.md": 300,          # Was 600, reduced for efficiency
     "memory/decisions/INDEX.md": 400,  # Was 1200, reduced for efficiency
     "CLAUDE.md": 2500,
+    # Template files (same limits)
+    "memory/NOW-TEMPLATE.md": 800,
+    "memory/FIND-TEMPLATE.md": 300,
+    "memory/decisions/INDEX-TEMPLATE.md": 400,
+    "CLAUDE-TEMPLATE.md": 2500,
 }
 
 # Estimated tokens per line for different file types
