@@ -345,5 +345,58 @@ If you need to merge despite violations:
 
 ---
 
+## 8. Commit/Merge Protocol (MANDATORY)
+
+**Enforcement**: Manual discipline
+**Violation**: User trust breach
+
+### Required Process
+
+```text
+1. Create/Edit → 2. Show User → 3. User Approve → 4. Commit → 5. PR → 6. User Approve → 7. Merge
+```
+
+### Before Commit
+
+| Step | Action | Required |
+|------|--------|----------|
+| 1 | Show created/edited content to user | ✅ YES |
+| 2 | Wait for explicit user approval | ✅ YES |
+| 3 | User gives clear approval signal | ✅ YES |
+
+### Before Merge
+
+| Step | Action | Required |
+|------|--------|----------|
+| 1 | Create PR (not merge directly) | ✅ YES |
+| 2 | Show PR link to user | ✅ YES |
+| 3 | Wait for explicit merge approval | ✅ YES |
+
+### Forbidden Actions
+
+```text
+❌ Commit without showing content first
+❌ Merge PR without user approval
+❌ Auto-merge to main without explicit request
+❌ Skip verification/testing steps
+❌ Assume user approval from silence
+```
+
+### Approval Detection
+
+```text
+Clear Approval Signals:
+✅ Direct instruction to proceed
+✅ Explicit confirmation words
+✅ Commands like "commit", "merge", "PR"
+
+NOT Approval:
+❌ No response (silence)
+❌ Questions or requests for clarification
+❌ "Let me check" / "I'll review"
+```
+
+---
+
 **Last Updated**: 2025-11-26
 **Enforced By**: Git hooks + GitHub Actions
