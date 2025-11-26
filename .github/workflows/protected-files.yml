@@ -22,17 +22,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check if system branch
+      - name: Check if allowed branch
         id: check-branch
         run: |
           SOURCE_BRANCH="${{ github.head_ref }}"
+          TARGET_BRANCH="${{ github.base_ref }}"
           echo "Source branch: $SOURCE_BRANCH"
+          echo "Target branch: $TARGET_BRANCH"
 
+          # system/* branches always allowed (with review)
           if [[ "$SOURCE_BRANCH" == system/* ]]; then
-            echo "is_system_branch=true" >> $GITHUB_OUTPUT
+            echo "is_allowed_branch=true" >> $GITHUB_OUTPUT
             echo "::notice::System branch detected - protected file modification allowed with review"
+          # release/* and hotfix/* allowed for main merges (gitflow)
+          elif [[ "$TARGET_BRANCH" == "main" ]] && [[ "$SOURCE_BRANCH" == release/* || "$SOURCE_BRANCH" == hotfix/* ]]; then
+            echo "is_allowed_branch=true" >> $GITHUB_OUTPUT
+            echo "::notice::Release/Hotfix to main detected - protected file modification allowed"
           else
-            echo "is_system_branch=false" >> $GITHUB_OUTPUT
+            echo "is_allowed_branch=false" >> $GITHUB_OUTPUT
           fi
 
       - name: List modified protected files
@@ -66,8 +73,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "protected_found=$PROTECTED_FOUND" >> $GITHUB_OUTPUT
 
-      - name: Block if not system branch
-        if: steps.check-branch.outputs.is_system_branch == 'false' && steps.list-files.outputs.protected_found == 'true'
+      - name: Block if not allowed branch
+        if: steps.check-branch.outputs.is_allowed_branch == 'false' && steps.list-files.outputs.protected_found == 'true'
         run: |
           echo "::error::Protected files cannot be modified from non-system branches"
           echo ""
@@ -85,7 +92,7 @@ jobs:
           exit 1
 
       - name: Require additional review
-        if: steps.check-branch.outputs.is_system_branch == 'true'
+        if: steps.check-branch.outputs.is_allowed_branch == 'true'
         run: |
           echo "::warning::This PR modifies protected files and requires additional review"
           echo ""
@@ -101,7 +108,7 @@ jobs:
           echo "*This PR modifies protected system files*" >> $GITHUB_STEP_SUMMARY
 
       - name: Add PR label
-        if: steps.check-branch.outputs.is_system_branch == 'true'
+        if: steps.check-branch.outputs.is_allowed_branch == 'true'
         continue-on-error: true
         uses: actions/github-script@v7
         with:
@@ -118,8 +125,8 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ steps.check-branch.outputs.is_system_branch }}" == "true" ]; then
-            echo "**Status**: Allowed (system branch) - Requires additional review" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check-branch.outputs.is_allowed_branch }}" == "true" ]; then
+            echo "**Status**: Allowed - Requires additional review" >> $GITHUB_STEP_SUMMARY
           elif [ "${{ steps.list-files.outputs.protected_found }}" == "true" ]; then
             echo "**Status**: BLOCKED - Use system/* branch for protected files" >> $GITHUB_STEP_SUMMARY
           else
