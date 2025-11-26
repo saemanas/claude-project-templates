@@ -86,15 +86,16 @@ jobs:
               fi
               ;;
             develop)
-              # feature/*, bugfix/*, release/*, hotfix/* can merge to develop
+              # feature/*, bugfix/*, release/*, hotfix/*, system/* can merge to develop
               if [[ "$SOURCE" == feature/* ]] || \
                  [[ "$SOURCE" == bugfix/* ]] || \
                  [[ "$SOURCE" == release/* ]] || \
                  [[ "$SOURCE" == hotfix/* ]] || \
+                 [[ "$SOURCE" == system/* ]] || \
                  [[ "$SOURCE" == main ]]; then
                 ALLOWED=true
               else
-                ERROR_MSG="Only feature/*, bugfix/*, release/*, hotfix/* branches can merge to develop"
+                ERROR_MSG="Only feature/*, bugfix/*, release/*, hotfix/*, system/* branches can merge to develop"
               fi
               ;;
             *)
@@ -125,6 +126,7 @@ jobs:
              [[ "$SOURCE" == bugfix/* ]] || \
              [[ "$SOURCE" == hotfix/* ]] || \
              [[ "$SOURCE" == release/* ]] || \
+             [[ "$SOURCE" == system/* ]] || \
              [[ "$SOURCE" == main ]] || \
              [[ "$SOURCE" == develop ]]; then
             echo "OK: Branch name '$SOURCE' follows convention"
@@ -136,6 +138,7 @@ jobs:
             echo "  bugfix/issue-number-description"
             echo "  hotfix/critical-fix"
             echo "  release/x.x.x"
+            echo "  system/description (for protected files)"
           fi
 
   check-commit-messages:
@@ -151,16 +154,22 @@ jobs:
 
       - name: Check commit message format
         run: |
-          # Get commits in PR
-          COMMITS=$(git log --format="%s" origin/${{ github.base_ref }}..HEAD)
+          # Get commits in PR (exclude merge commits)
+          COMMITS=$(git log --no-merges --format="%s" origin/${{ github.base_ref }}..HEAD)
 
-          echo "Checking commit messages..."
+          echo "Checking commit messages (excluding merge commits)..."
           echo ""
 
           WARNINGS=0
 
           while IFS= read -r msg; do
             [[ -z "$msg" ]] && continue
+
+            # Skip GitHub's temporary merge commits (backup check)
+            if [[ "$msg" =~ ^Merge\ [a-f0-9]+\ into\ [a-f0-9]+ ]]; then
+              echo "SKIP (merge): $msg"
+              continue
+            fi
 
             # Check conventional commit format
             if [[ "$msg" =~ ^(feat|fix|hotfix|docs|refactor|test|chore|style|perf|ci|build|revert)(\(.+\))?:\ .+ ]]; then
