@@ -37,17 +37,7 @@
 
 - This week: [timeline/{YYYY-Wnn}.md](./timeline/{YYYY-Wnn}.md)
 - Decisions: [decisions/INDEX.md](./decisions/INDEX.md)
-
----
-
-## Git History (On-Demand)
-
-```bash
-git log --oneline -20          # Recent 20 commits
-git log --since="YYYY-MM-DD"   # Since specific date
-git log --oneline -- path/     # Changes to specific path
-git diff HEAD~5                # Last 5 commits diff
-```
+- Git history: `git log --oneline -20` (on-demand)
 
 ---
 
