@@ -40,6 +40,8 @@ This is a **complete, automated project memory system** that:
 - Reduces token usage by **81%** (3,800 vs 20,000+ tokens per session)
 - **Enforces rules automatically** via Git hooks and CI/CD
 - **Enforces Gitflow** branching strategy
+- **Docker-first development** (no venv/virtualenv)
+- **Makefile-driven workflows** (standardized commands)
 - Maintains complete project history with **zero information loss**
 - Scales from 1-week to 5+ year projects
 - Works for any project type (software, research, business, content)
@@ -52,8 +54,10 @@ This is a **complete, automated project memory system** that:
 |-------------|--------|---------|
 | Git | **Required** | `brew install git` |
 | GitHub CLI (`gh`) | **Required** | `brew install gh` |
+| Docker & Docker Compose | **Required** | `brew install docker` |
+| GNU Make | **Required** | Pre-installed on macOS/Linux |
 | GitHub Account (Free) | **Required** | github.com |
-| Python 3 | Recommended | `brew install python3` |
+| Python 3 | Optional (scripts) | `brew install python3` |
 | tiktoken | Optional | `pip3 install tiktoken` |
 
 ### GitHub Free Plan
@@ -72,17 +76,30 @@ This system works with **GitHub Free** (Public or Private):
 ### Quick Install (macOS)
 
 ```bash
-brew install git gh python3
+# Core tools (required)
+brew install git gh docker
+
+# Optional (for scripts)
+brew install python3
 pip3 install tiktoken
-gh auth login  # Authenticate with GitHub
+
+# Authenticate with GitHub
+gh auth login
 ```
 
 ### Quick Install (Linux)
 
 ```bash
-sudo apt install git python3 python3-pip
+# Core tools (required)
+sudo apt install git make
+# Docker: https://docs.docker.com/engine/install/
+# GitHub CLI: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+
+# Optional (for scripts)
+sudo apt install python3 python3-pip
 pip3 install tiktoken
-# Install gh: https://github.com/cli/cli/blob/trunk/docs/install_linux.md
+
+# Authenticate
 gh auth login
 ```
 
@@ -234,12 +251,46 @@ See **[RULES.md](./RULES.md)** for complete details.
 ./scripts/setup.sh --github-url https://github.com/user/repo.git
 ```
 
+### Development Environment (Docker + Make)
+
+```bash
+# Start all services
+cd stacks && make up
+
+# View logs
+make logs
+
+# Run tests
+make test
+
+# Access shell
+make shell-backend   # Python/FastAPI
+make shell-frontend  # Node/React
+make shell-db        # PostgreSQL
+make shell-cache     # Redis
+
+# Stop services
+make down
+
+# Clean everything
+make clean
+```
+
 ### Daily Development
 
 ```bash
-# Start feature
+# Start environment
+cd stacks && make up
+
+# Create feature branch
 git checkout develop
 git checkout -b feature/my-feature
+
+# Make changes (Docker auto-reloads)
+# ...
+
+# Run tests
+make test
 
 # Commit (auto-validated)
 git commit -m "feat: description"
@@ -281,8 +332,20 @@ Types:
 3. **You're on** `develop` branch
 4. **Start working**:
    ```bash
+   # Start development environment (Docker)
+   cd stacks
+   make up
+
+   # Create feature branch
    git checkout -b feature/first-feature
-   # Make changes
+
+   # Make changes (Docker auto-reloads)
+   # ...
+
+   # Run tests
+   make test
+
+   # Commit and create PR
    git commit -m "feat: first feature"
    gh pr create --base develop
    ```
@@ -291,6 +354,11 @@ Types:
    ```
    "Read memory/NOW.md"
    ```
+
+6. **Development workflow**:
+   - All code runs in Docker containers
+   - Use `make` commands for common tasks
+   - No venv/virtualenv needed
 
 ---
 

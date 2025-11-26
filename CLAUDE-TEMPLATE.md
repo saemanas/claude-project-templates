@@ -289,6 +289,27 @@ refs/dependencies/VERSIONS.lock.md <- Dependency versions (LOCKED)
 
 ## Critical Constraints
 
+### Development Environment (REQUIRED)
+```
+- venv/virtualenv/conda -> Use Docker only
+- Local Python/Node install -> Use Docker containers
+- Local package managers -> Use Docker + Makefile
++ Docker Compose (required)
++ Makefile for commands (required)
++ Gitflow (git + gh CLI)
+```
+
+**Why**:
+- Consistent environment across all developers
+- No "works on my machine" issues
+- Simplified onboarding (just Docker + Make)
+- All dependencies containerized
+
+**Tools Required**:
+- Docker & Docker Compose
+- GNU Make
+- Git & GitHub CLI (gh)
+
 ### {CONSTRAINT_CATEGORY_1}
 ```
 - {CONSTRAINT_1} -> {ALTERNATIVE}
@@ -367,6 +388,60 @@ refs/dependencies/VERSIONS.lock.md <- Dependency versions (LOCKED)
 ---
 
 ## Common Tasks
+
+### "Start Development Environment"
+```bash
+# Start all services
+make up
+
+# Check service health
+make healthcheck
+
+# View logs
+make logs
+
+# View specific service logs
+make logs SERVICE=backend
+```
+
+### "Run Tests"
+```bash
+# Run all tests (in Docker)
+make test
+
+# Run backend tests only
+make test-backend
+
+# Run frontend tests only
+make test-frontend
+```
+
+### "Access Service Shell"
+```bash
+# Backend Python shell
+make shell-backend
+
+# Frontend Node shell
+make shell-frontend
+
+# Database psql
+make shell-db
+
+# Redis CLI
+make shell-cache
+```
+
+### "Add New Feature (Full Workflow)"
+1. Read [memory/NOW.md](memory/NOW.md) for current state
+2. Start environment: `make up`
+3. Create feature branch: `git checkout -b feature/my-feature`
+4. Make changes in code (Docker auto-reloads)
+5. Test: `make test`
+6. Commit with detailed message (see Git Workflow section)
+7. Push: `git push -u origin feature/my-feature`
+8. Create PR: `gh pr create --base develop`
+9. Update [memory/NOW.md](memory/NOW.md)
+10. Log in [memory/timeline/YYYY-Wnn.md](memory/timeline/YYYY-Wnn.md)
 
 ### "{Common Task 1}"
 1. Read [memory/NOW.md](memory/NOW.md) for current state
@@ -498,6 +573,9 @@ See [RULES.md](./RULES.md) for:
 - Skip weekly log entries (lose history)
 - Duplicate information across files (sync issues)
 - Let files grow beyond line limits (token bloat)
+- **Use venv/virtualenv/conda** (Docker only!)
+- **Install packages locally** (use Docker containers)
+- **Run code outside Docker** (except Makefile commands)
 - **Modify protected files** (.protected/, .githooks/, scripts/, RULES.md)
 - **Bypass pre-commit hooks** (git commit --no-verify)
 - **Push directly to main/develop** (use feature/* branches)
@@ -517,6 +595,10 @@ See [RULES.md](./RULES.md) for:
 - Log actions in weekly timeline
 - Create decision records for significant choices
 - Keep files under line limits
+- **Use Docker Compose for all development** (`make up`)
+- **Use Makefile commands** for common tasks
+- **Test in Docker containers** (`make test`)
+- **Use Git + gh CLI** for version control
 - {PROJECT_SPECIFIC_DO_1}
 - {PROJECT_SPECIFIC_DO_2}
 - Link between files (bidirectional)

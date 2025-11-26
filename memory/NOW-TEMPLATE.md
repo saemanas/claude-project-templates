@@ -110,6 +110,25 @@ Why: {Rationale}
 
 ---
 
+## Development Environment
+
+**Tools**:
+- Docker & Docker Compose (all services)
+- Makefile (command shortcuts)
+- Git + gh CLI (version control)
+
+**Quick Commands**:
+```bash
+make up          # Start environment
+make test        # Run tests
+make logs        # View logs
+make shell-*     # Access shells
+```
+
+**Important**: No venv/virtualenv. All development in Docker.
+
+---
+
 ## When to Update This File
 
 🔄 Auto-update triggers:
