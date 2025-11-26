@@ -37,6 +37,7 @@
 
 - This week: [timeline/{YYYY-Wnn}.md](./timeline/{YYYY-Wnn}.md)
 - Decisions: [decisions/INDEX.md](./decisions/INDEX.md)
+- Git history: `git log --oneline -20` (on-demand)
 
 ---
 
