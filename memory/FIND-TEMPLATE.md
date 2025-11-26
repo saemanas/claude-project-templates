@@ -40,4 +40,15 @@
 
 ---
 
+## Git History (On-Demand)
+
+```bash
+git log --oneline -20          # Recent 20 commits
+git log --since="YYYY-MM-DD"   # Since specific date
+git log --oneline -- path/     # Changes to specific path
+git diff HEAD~5                # Last 5 commits diff
+```
+
+---
+
 **Token cost**: ~300 tokens
