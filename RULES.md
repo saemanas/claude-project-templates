@@ -23,34 +23,75 @@
 **Enforcement**: Pre-commit hook + CI/CD
 **Violation**: Commit blocked
 
+### 1.1 Memory System Files
+
 | File Type | Max Lines | Action on Exceed |
 |-----------|-----------|------------------|
-| `memory/NOW.md` | **300** | Split to timeline |
-| `memory/FIND.md` | **200** | Split or simplify |
-| `memory/decisions/INDEX.md` | **300** | Split by year |
-| `memory/timeline/YYYY-Wnn.md` | **500** | Create next week |
-| `memory/timeline/*-SUMMARY.md` | **500** | Create quarterly summary |
-| `memory/decisions/DEC-*.md` | **500** | Split into related decisions |
-| `docs/*/README.md` | **100** | Move content to separate files |
-| `docs/*/*.md` (content) | **500** | Split file |
+| `memory/NOW.md` | **150** | Split to timeline |
+| `memory/FIND.md` | **100** | Remove outdated entries |
+| `memory/decisions/INDEX.md` | **100** | Split by year |
+| `memory/timeline/YYYY-Wnn.md` | **300** | Create next week |
+| `memory/timeline/*-SUMMARY.md` | **200** | Create quarterly summary |
+| `memory/decisions/DEC-*.md` | **300** | Split into related decisions |
 
-### What to do when limit exceeded
+### 1.2 Documentation Files
+
+| File Type | Max Lines | Action on Exceed |
+|-----------|-----------|------------------|
+| `docs/*/README.md` | **100** | Move content to separate files |
+| `docs/*/*.md` (content) | **300** | Split file |
+| `CLAUDE.md` | **300** | Simplify, move to docs/ |
+
+### 1.3 Reference Files (refs/)
+
+| File Type | Max Lines | Action on Exceed |
+|-----------|-----------|------------------|
+| `refs/PROJECT-CONTEXT.md` | **100** | Keep essential only |
+| `refs/prd/*.md` | **300** | Split into multiple PRDs |
+| `refs/stack/STACK-DECISION.md` | **200** | Summarize, link to research |
+| `refs/stack/STACK-RESEARCH.md` | **300** | Archive old research |
+| `refs/stack/STACK-ALTERNATIVES.md` | **200** | Keep top alternatives only |
+| `refs/dependencies/VERSIONS.lock.md` | **200** | Split by category |
+| `refs/dependencies/UPGRADE-LOG.md` | **300** | Archive old entries |
+| `refs/research/*.md` | **300** | Split by topic |
+| `refs/index/INDEX.md` | **300** | Auto-generated, split if needed |
+
+### 1.4 Source Code (MONITORED, not blocked)
+
+| File Type | Recommended Max | Action on Exceed |
+|-----------|-----------------|------------------|
+| `*.py` | **300** | Refactor into modules |
+| `*.ts/*.js` | **300** | Refactor into modules |
+| `*.go` | **400** | Refactor into packages |
+| Config files | **100** | Split by environment |
+
+### 1.5 What to do when limit exceeded
 
 ```
-NOW.md > 300 lines:
+NOW.md > 150 lines:
 ├─ Move "Completed" items to weekly log
 ├─ Move old "Critical Facts" to decisions/
 └─ Keep only active/current content
 
-Weekly log > 500 lines:
+Weekly log > 300 lines:
 ├─ Create YYYY-W{nn+1}.md
 ├─ Add bidirectional links
 └─ Move remaining week's entries
 
-Decision record > 500 lines:
+Decision record > 300 lines:
 ├─ Extract "Related" section to new DEC file
 ├─ Link with "Superseded by" or "Related to"
 └─ Keep core decision in original
+
+PRD > 300 lines:
+├─ Split into PRD-nnn-a, PRD-nnn-b
+├─ Or separate by feature area
+└─ Link with "Related PRD" section
+
+refs/research/* > 300 lines:
+├─ Archive completed research
+├─ Keep only active research
+└─ Summary in STACK-DECISION.md
 ```
 
 ---
@@ -62,12 +103,18 @@ Decision record > 500 lines:
 
 ### Required Files
 
-```
+```text
 memory/
 ├── NOW.md          (REQUIRED)
-├── FIND.md         (RECOMMENDED)
+├── FIND.md         (REQUIRED)
 ├── timeline/       (REQUIRED directory)
 └── decisions/      (RECOMMENDED directory)
+
+refs/
+├── PROJECT-CONTEXT.md  (REQUIRED)
+├── index/
+│   └── INDEX.md    (AUTO-GENERATED)
+└── ...
 ```
 
 ### Required Sections in NOW.md
@@ -214,10 +261,13 @@ Incorrect:
 
 | File | Token Budget | Warning at |
 |------|-------------|------------|
-| `memory/NOW.md` | 1,200 | >1,080 (90%) |
-| `memory/FIND.md` | 600 | >540 (90%) |
-| `CLAUDE.md` | 2,500 | >2,250 (90%) |
-| Session total | 3,800 | >3,400 (90%) |
+| `memory/NOW.md` | 600 | >540 (90%) |
+| `memory/FIND.md` | 400 | >360 (90%) |
+| `refs/PROJECT-CONTEXT.md` | 400 | >360 (90%) |
+| `CLAUDE.md` | 1,200 | >1,080 (90%) |
+| Session start total | **2,600** | >2,340 (90%) |
+
+> Session Start = NOW.md + FIND.md + PROJECT-CONTEXT.md + CLAUDE.md
 
 ### Check Token Usage
 
@@ -326,17 +376,21 @@ If you need to merge despite violations:
 
 ## Quick Reference Card
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │          ZERO TOLERANCE RULES               │
 ├─────────────────────────────────────────────┤
-│ NOW.md        │ 300 lines │ 1,200 tokens   │
-│ FIND.md       │ 200 lines │   600 tokens   │
-│ Weekly log    │ 500 lines │ 2,000 tokens   │
-│ Decision      │ 500 lines │ 2,000 tokens   │
-│ Topic README  │ 100 lines │   400 tokens   │
+│ NOW.md           │ 150 lines │   600 tokens │
+│ FIND.md          │ 100 lines │   400 tokens │
+│ PROJECT-CONTEXT  │ 100 lines │   400 tokens │
+│ CLAUDE.md        │ 300 lines │ 1,200 tokens │
 ├─────────────────────────────────────────────┤
-│ Session total │     -     │ 3,800 tokens   │
+│ Weekly log       │ 300 lines │ 1,200 tokens │
+│ Decision         │ 300 lines │ 1,200 tokens │
+│ PRD              │ 300 lines │ 1,200 tokens │
+│ Topic README     │ 100 lines │   400 tokens │
+├─────────────────────────────────────────────┤
+│ Session start    │     -     │ 2,600 tokens │
 ├─────────────────────────────────────────────┤
 │ Validate: ./scripts/validate-memory.sh     │
 │ Tokens:   python3 scripts/count-tokens.py  │
