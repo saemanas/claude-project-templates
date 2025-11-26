@@ -1,8 +1,11 @@
 # Current Project State
 
+**Session ID**: {YYYYMMDD-nnn}
 **Updated**: {YYYY-MM-DD HH:MM}
 **Phase**: {CURRENT_PHASE}
 **Lines**: {CURRENT}/150
+
+> AI must state Session ID to prove this file was read. Increment on each update.
 
 ---
 

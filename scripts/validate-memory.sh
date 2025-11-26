@@ -27,19 +27,31 @@ ERRORS=0
 WARNINGS=0
 
 # Line limits (zero tolerance)
-# Reduced limits based on real-world usage optimization (2025-11-26)
+# Optimized limits for token efficiency (2025-11-26)
 declare -A LINE_LIMITS=(
-    ["memory/NOW.md"]=150      # Was 300, reduced for efficiency
-    ["memory/FIND.md"]=50      # Was 200, reduced for efficiency
-    ["memory/decisions/INDEX.md"]=50  # Was 300, reduced for efficiency
+    # Memory system
+    ["memory/NOW.md"]=150
+    ["memory/FIND.md"]=100
+    ["memory/decisions/INDEX.md"]=100
+    # Core files
+    ["CLAUDE.md"]=300
+    # Reference files
+    ["refs/PROJECT-CONTEXT.md"]=100
+    ["refs/stack/STACK-DECISION.md"]=200
+    ["refs/stack/STACK-ALTERNATIVES.md"]=200
+    ["refs/dependencies/VERSIONS.lock.md"]=200
 )
 
 # Pattern-based limits
-WEEKLY_LOG_LIMIT=500
-MONTHLY_SUMMARY_LIMIT=500
-DECISION_RECORD_LIMIT=500
+WEEKLY_LOG_LIMIT=300
+MONTHLY_SUMMARY_LIMIT=200
+DECISION_RECORD_LIMIT=300
 TOPIC_README_LIMIT=100
-TOPIC_CONTENT_LIMIT=500
+TOPIC_CONTENT_LIMIT=300
+PRD_LIMIT=300
+STACK_RESEARCH_LIMIT=300
+UPGRADE_LOG_LIMIT=300
+RESEARCH_LIMIT=300
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -133,6 +145,14 @@ check_now_md_structure() {
 
     if [[ ! -f "$file" ]]; then
         return 0
+    fi
+
+    # Check Session ID exists
+    if ! grep -q "^\*\*Session ID\*\*:" "$file"; then
+        log_error "NOW.md missing **Session ID**: field (required for AI verification)"
+    else
+        local session_id=$(grep "^\*\*Session ID\*\*:" "$file" | head -1)
+        log_success "NOW.md has Session ID: $session_id"
     fi
 
     local required_sections=(
@@ -345,6 +365,26 @@ main() {
             [[ -f "$file" ]] || continue
             [[ "$(basename "$file")" == "README.md" ]] && continue
             check_line_count "$file" $TOPIC_CONTENT_LIMIT "Topic content"
+        done
+    fi
+    echo ""
+
+    # Check refs/ structure
+    log_info "Checking reference files (refs/)..."
+    if [[ -d "refs" ]]; then
+        # PRD files
+        for file in refs/prd/*.md; do
+            [[ -f "$file" ]] && check_line_count "$file" $PRD_LIMIT "PRD"
+        done
+        # Stack research
+        [[ -f "refs/stack/STACK-RESEARCH.md" ]] && \
+            check_line_count "refs/stack/STACK-RESEARCH.md" $STACK_RESEARCH_LIMIT "Stack research"
+        # Upgrade log
+        [[ -f "refs/dependencies/UPGRADE-LOG.md" ]] && \
+            check_line_count "refs/dependencies/UPGRADE-LOG.md" $UPGRADE_LOG_LIMIT "Upgrade log"
+        # Research files
+        for file in refs/research/*.md; do
+            [[ -f "$file" ]] && check_line_count "$file" $RESEARCH_LIMIT "Research"
         done
     fi
     echo ""

@@ -213,34 +213,64 @@ else
         fi
     }
 
-    # Check memory files
+    # Check all tracked files with line limits
     for file in $STAGED_FILES; do
         case "$file" in
+            # Memory system files
             memory/NOW.md)
-                check_lines "$file" 300 || ((ERRORS++))
+                check_lines "$file" 150 || ((ERRORS++))
                 ;;
             memory/FIND.md)
-                check_lines "$file" 200 || ((ERRORS++))
+                check_lines "$file" 100 || ((ERRORS++))
                 ;;
             memory/decisions/INDEX.md)
-                check_lines "$file" 300 || ((ERRORS++))
+                check_lines "$file" 100 || ((ERRORS++))
                 ;;
             memory/timeline/????-W??.md)
-                check_lines "$file" 500 || ((ERRORS++))
+                check_lines "$file" 300 || ((ERRORS++))
                 ;;
             memory/timeline/*-SUMMARY.md)
-                check_lines "$file" 500 || ((ERRORS++))
+                check_lines "$file" 200 || ((ERRORS++))
                 ;;
             memory/decisions/DEC-*.md)
-                check_lines "$file" 500 || ((ERRORS++))
+                check_lines "$file" 300 || ((ERRORS++))
+                ;;
+            # Documentation files
+            CLAUDE.md)
+                check_lines "$file" 300 || ((ERRORS++))
                 ;;
             docs/*/README.md)
                 check_lines "$file" 100 || ((ERRORS++))
                 ;;
             docs/*/*.md)
                 if [[ "$(basename "$file")" != "README.md" ]]; then
-                    check_lines "$file" 500 || ((ERRORS++))
+                    check_lines "$file" 300 || ((ERRORS++))
                 fi
+                ;;
+            # Reference files (refs/)
+            refs/PROJECT-CONTEXT.md)
+                check_lines "$file" 100 || ((ERRORS++))
+                ;;
+            refs/prd/*.md)
+                check_lines "$file" 300 || ((ERRORS++))
+                ;;
+            refs/stack/STACK-DECISION.md)
+                check_lines "$file" 200 || ((ERRORS++))
+                ;;
+            refs/stack/STACK-RESEARCH.md)
+                check_lines "$file" 300 || ((ERRORS++))
+                ;;
+            refs/stack/STACK-ALTERNATIVES.md)
+                check_lines "$file" 200 || ((ERRORS++))
+                ;;
+            refs/dependencies/VERSIONS.lock.md)
+                check_lines "$file" 200 || ((ERRORS++))
+                ;;
+            refs/dependencies/UPGRADE-LOG.md)
+                check_lines "$file" 300 || ((ERRORS++))
+                ;;
+            refs/research/*.md)
+                check_lines "$file" 300 || ((ERRORS++))
                 ;;
         esac
     done
@@ -249,33 +279,91 @@ fi
 echo ""
 
 # ============================================================================
-# CODE + MEMORY SYNC CHECK
+# ANY CHANGE + MEMORY SYNC CHECK (ALL files, not just code)
 # ============================================================================
 
-echo -e "${BLUE}[Sync]${NC} Checking code-memory synchronization..."
+echo -e "${BLUE}[Sync]${NC} Checking file-memory synchronization..."
 
-CODE_CHANGED=false
+PROJECT_FILE_CHANGED=false
 MEMORY_CHANGED=false
 
 for file in $STAGED_FILES; do
     case "$file" in
-        *.py|*.js|*.ts|*.jsx|*.tsx|*.go|*.rs|*.java|*.c|*.cpp|*.h|*.hpp|*.rb|*.php|*.swift|*.kt|*.scala|*.cs)
-            CODE_CHANGED=true
-            ;;
+        # Memory files themselves
         memory/*.md)
             MEMORY_CHANGED=true
+            ;;
+        # System files (exempt from memory update requirement)
+        .githooks/*|.github/*|scripts/*)
+            # System files don't require memory update
+            ;;
+        # Template files (exempt)
+        *-TEMPLATE.md|CLAUDE-TEMPLATE.md)
+            # Templates don't require memory update
+            ;;
+        # Everything else requires memory update
+        *)
+            PROJECT_FILE_CHANGED=true
             ;;
     esac
 done
 
-if $CODE_CHANGED && ! $MEMORY_CHANGED; then
-    echo -e "${YELLOW}[WARN]${NC} Code changed without memory update"
-    echo "  Consider updating:"
-    echo "    - memory/timeline/YYYY-Wnn.md (log your changes)"
-    echo "    - memory/NOW.md (if status changed)"
-    ((WARNINGS++))
+if $PROJECT_FILE_CHANGED && ! $MEMORY_CHANGED; then
+    echo -e "${RED}[BLOCKED]${NC} Files changed without memory update"
+    echo ""
+    echo "  ${YELLOW}AI must update memory when changing ANY project file:${NC}"
+    echo "    - memory/NOW.md (update Session ID + status)"
+    echo "    - memory/timeline/YYYY-Wnn.md (log changes)"
+    echo ""
+    echo "  ${CYAN}This ensures ALL changes are tracked across sessions.${NC}"
+    echo ""
+    ((ERRORS++))
 else
-    echo -e "${GREEN}[OK]${NC} Code-memory sync check passed"
+    echo -e "${GREEN}[OK]${NC} File-memory sync check passed"
+fi
+
+echo ""
+
+# ============================================================================
+# PROJECT INDEX AUTO-REGENERATION
+# ============================================================================
+
+echo -e "${BLUE}[Index]${NC} Checking project component index..."
+
+# Check if any indexable files changed
+INDEX_TRIGGER=false
+for file in $STAGED_FILES; do
+    case "$file" in
+        *.py|*.js|*.ts|*.jsx|*.tsx|*.go|*.java|*.rb)
+            INDEX_TRIGGER=true
+            ;;
+        .env.example|.env.sample|.env.template)
+            INDEX_TRIGGER=true
+            ;;
+        CLAUDE.md|RULES.md|memory/*.md|refs/*.md)
+            INDEX_TRIGGER=true
+            ;;
+    esac
+done
+
+if $INDEX_TRIGGER; then
+    if [ -x "scripts/generate-index.sh" ]; then
+        # Regenerate index
+        ./scripts/generate-index.sh > /dev/null 2>&1
+
+        # Check if index changed
+        if ! git diff --quiet refs/index/INDEX.md 2>/dev/null; then
+            git add refs/index/INDEX.md
+            echo -e "${GREEN}[OK]${NC} Index auto-regenerated and staged"
+        else
+            echo -e "${GREEN}[OK]${NC} Index up-to-date"
+        fi
+    else
+        echo -e "${YELLOW}[WARN]${NC} Index generator not found, skipping"
+        ((WARNINGS++))
+    fi
+else
+    echo -e "${GREEN}[OK]${NC} No indexable files changed"
 fi
 
 echo ""
