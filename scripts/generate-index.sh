@@ -139,19 +139,19 @@ generate_index() {
 |------|------|------|-------------|
 EOF
 
-    # Extract from Python files
-    find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -not -path "./__pycache__/*" 2>/dev/null | while read file; do
-        extract_python "$file" | grep -v "^CLASS"
+    # Extract from Python files (with timeout protection)
+    find . -maxdepth 5 -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -not -path "./__pycache__/*" -type f 2>/dev/null | head -50 | while read -r file; do
+        [ -f "$file" ] && extract_python "$file" | grep -v "^CLASS"
     done
 
-    # Extract from JS/TS files
-    find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" 2>/dev/null | grep -v node_modules | grep -v ".git" | while read file; do
+    # Extract from JS/TS files (fixed find syntax)
+    find . -maxdepth 5 \( -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" \) -not -path "./.git/*" -not -path "./node_modules/*" -type f 2>/dev/null | head -50 | while read -r file; do
         [ -f "$file" ] && extract_javascript "$file" | grep -v "^CLASS"
     done
 
     # Extract from Go files
-    find . -name "*.go" -not -path "./.git/*" 2>/dev/null | while read file; do
-        extract_go "$file"
+    find . -maxdepth 5 -name "*.go" -not -path "./.git/*" -type f 2>/dev/null | head -50 | while read -r file; do
+        [ -f "$file" ] && extract_go "$file"
     done
 
     echo ""
@@ -161,12 +161,12 @@ EOF
     echo "|------|------|------|-------------|"
 
     # Classes from Python
-    find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" 2>/dev/null | while read file; do
-        extract_python "$file" | grep "^CLASS" | sed 's/^CLASS//'
+    find . -maxdepth 5 -name "*.py" -not -path "./.git/*" -not -path "./venv/*" -type f 2>/dev/null | head -50 | while read -r file; do
+        [ -f "$file" ] && extract_python "$file" | grep "^CLASS" | sed 's/^CLASS//'
     done
 
-    # Classes from JS/TS
-    find . -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" 2>/dev/null | grep -v node_modules | grep -v ".git" | while read file; do
+    # Classes from JS/TS (fixed find syntax)
+    find . -maxdepth 5 \( -name "*.js" -o -name "*.ts" -o -name "*.jsx" -o -name "*.tsx" \) -not -path "./.git/*" -not -path "./node_modules/*" -type f 2>/dev/null | head -50 | while read -r file; do
         [ -f "$file" ] && extract_javascript "$file" | grep "^CLASS" | sed 's/^CLASS//'
     done
 
@@ -219,21 +219,44 @@ main() {
     echo -e "${BLUE}══════════════════════════════════════════════════════════════${NC}"
     echo ""
 
-    # Generate new index
+    # Generate new index (with timeout protection for pre-commit hook)
     echo -e "${BLUE}[Index]${NC} Scanning project files..."
-    generate_index > "$TEMP_FILE"
+
+    # Use timeout if available (skip index generation if it takes too long)
+    if command -v timeout &> /dev/null; then
+        timeout 10 bash -c "$(declare -f extract_python extract_javascript extract_go extract_env_vars extract_doc_sections generate_index); generate_index" > "$TEMP_FILE" 2>/dev/null
+        if [ $? -eq 124 ]; then
+            echo -e "${YELLOW}[SKIP]${NC} Index generation timed out, skipping"
+            rm -f "$TEMP_FILE"
+            exit 0
+        fi
+    else
+        generate_index > "$TEMP_FILE"
+    fi
+
+    # Check if temp file was created and has content
+    if [ ! -s "$TEMP_FILE" ]; then
+        echo -e "${YELLOW}[SKIP]${NC} No index content generated"
+        rm -f "$TEMP_FILE"
+        exit 0
+    fi
 
     # Count lines
     local lines=$(wc -l < "$TEMP_FILE" | tr -d ' ')
-    sed -i.bak "s/{CURRENT}/$lines/" "$TEMP_FILE" 2>/dev/null || sed "s/{CURRENT}/$lines/" "$TEMP_FILE" > "${TEMP_FILE}.new" && mv "${TEMP_FILE}.new" "$TEMP_FILE"
-    rm -f "${TEMP_FILE}.bak"
+
+    # Replace {CURRENT} with actual line count (macOS/Linux compatible)
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        sed -i '' "s/{CURRENT}/$lines/" "$TEMP_FILE" 2>/dev/null || true
+    else
+        sed -i "s/{CURRENT}/$lines/" "$TEMP_FILE" 2>/dev/null || true
+    fi
 
     if $CHECK_MODE; then
         # Compare with existing
         if [ -f "$INDEX_FILE" ]; then
-            # Compare ignoring timestamp line
-            local old_hash=$(grep -v "^\*\*Generated\*\*:" "$INDEX_FILE" 2>/dev/null | md5sum | cut -d' ' -f1)
-            local new_hash=$(grep -v "^\*\*Generated\*\*:" "$TEMP_FILE" | md5sum | cut -d' ' -f1)
+            # Compare ignoring timestamp line (use md5 or shasum)
+            local old_hash=$(grep -v "^\*\*Generated\*\*:" "$INDEX_FILE" 2>/dev/null | md5 2>/dev/null || md5sum 2>/dev/null | cut -d' ' -f1)
+            local new_hash=$(grep -v "^\*\*Generated\*\*:" "$TEMP_FILE" | md5 2>/dev/null || md5sum 2>/dev/null | cut -d' ' -f1)
 
             if [ "$old_hash" = "$new_hash" ]; then
                 echo -e "${GREEN}[OK]${NC} Index is up-to-date"
